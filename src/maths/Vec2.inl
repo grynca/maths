@@ -181,7 +181,7 @@ namespace grynca {
     }
 
     inline std::ostream& operator <<(std::ostream& os, const Vec2& v) {
-        os << "[" << v.getX() << ", " << v.getY() << "]" << std::endl;
+        os << "[" << v.getX() << ", " << v.getY() << "]";
         return os;
     }
 }

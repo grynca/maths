@@ -7,9 +7,9 @@
 
 namespace grynca {
 
-    class Frame {
+    class Transform {
     public:
-        Frame(const Vec2& position = {0,0}, const Angle& rotation = 0, const Vec2& scale = {0,0});
+        Transform(const Vec2& position = {0,0}, const Angle& rotation = 0, const Vec2& scale = {0,0});
 
         void setPosition(const Vec2& p);
         void setScale(const Vec2& s);
@@ -34,5 +34,5 @@ namespace grynca {
 
 }
 
-#include "Frame.inl"
+#include "Transform.inl"
 #endif //FRAME_H

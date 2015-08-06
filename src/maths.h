@@ -5,7 +5,7 @@
 #include "maths/Vec2.h"
 #include "maths/Mat3.h"
 #include "maths/Interval.h"
-#include "maths/Frame.h"
+#include "maths/Transform.h"
 #include "maths/shapes/Circle.h"
 #include "maths/shapes/ARect.h"
 #include "maths/shapes/Rect.h"

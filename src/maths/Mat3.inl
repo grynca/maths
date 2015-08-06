@@ -83,6 +83,14 @@ namespace grynca {
         return *this;
     }
 
+    inline glm::mat3& Mat3::getInternal() {
+        return m_;
+    }
+
+    inline const glm::mat3& Mat3::getInternal()const {
+        return m_;
+    }
+
     inline Mat3 operator*(const Mat3& t, const Mat3& m) {
         return Mat3(t.m_*m.m_);
     }

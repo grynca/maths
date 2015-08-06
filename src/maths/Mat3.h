@@ -34,6 +34,9 @@ namespace grynca {
         float val(size_t row, size_t col)const;
 
         Mat3& operator*=(const Mat3& m);
+
+        glm::mat3& getInternal();
+        const glm::mat3& getInternal()const;
     private:
         Mat3(const glm::mat3& m);
         glm::mat3 m_;
