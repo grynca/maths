@@ -1,5 +1,5 @@
-#ifndef FRAME_H
-#define FRAME_H
+#ifndef TRANSFORM_H
+#define TRANSFORM_H
 
 #include "Vec2.h"
 #include "Mat3.h"
@@ -9,7 +9,7 @@ namespace grynca {
 
     class Transform {
     public:
-        Transform(const Vec2& position = {0,0}, const Angle& rotation = 0, const Vec2& scale = {0,0});
+        Transform(const Vec2& position = {0,0}, const Angle& rotation = 0, const Vec2& scale = {1, 1});
 
         void setPosition(const Vec2& p);
         void setScale(const Vec2& s);
@@ -35,4 +35,4 @@ namespace grynca {
 }
 
 #include "Transform.inl"
-#endif //FRAME_H
+#endif //TRANSFORM_H

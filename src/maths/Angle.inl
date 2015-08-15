@@ -89,7 +89,7 @@ namespace grynca {
         return sin_fast_(x);
     }
 
-    inline std::ostream& operator<<(std::ostream& os, Angle& a) {
+    inline std::ostream& operator<<(std::ostream& os, const Angle& a) {
         os << a.rads_;
         return os;
     }

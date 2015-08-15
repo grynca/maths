@@ -17,15 +17,15 @@ namespace grynca {
         rotation_ = r;
     }
 
-    inline const Vec2&Transform::getPosition()const {
+    inline const Vec2& Transform::getPosition()const {
         return position_;
     }
 
-    inline const Vec2&Transform::getScale()const {
+    inline const Vec2& Transform::getScale()const {
         return scale_;
     }
 
-    inline const Angle&Transform::getRotation()const {
+    inline const Angle& Transform::getRotation()const {
         return rotation_;
     }
 

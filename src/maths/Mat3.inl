@@ -70,6 +70,11 @@ namespace grynca {
                                  -0.5f*viewport_size.getY()));
     }
 
+    inline Mat3 Mat3::invert(const Mat3& m) {
+    //static
+        return Mat3(glm::inverse(m.getInternal()));
+    }
+
     inline float& Mat3::val(size_t row, size_t col) {
         return m_[row][col];
     }

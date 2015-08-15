@@ -29,6 +29,7 @@ namespace grynca {
         static Mat3 createScaleT(const Vec2& scale);
         static Mat3 createProjection2D(const Vec2& viewport_size);
         static Mat3 createProjectionIverse2D(const Vec2& viewport_size);
+        static Mat3 invert(const Mat3& m);
 
         float& val(size_t row, size_t col);
         float val(size_t row, size_t col)const;

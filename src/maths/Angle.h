@@ -3,7 +3,7 @@
 
 namespace grynca {
     class Angle {
-        friend std::ostream& operator<<(std::ostream& os, Angle& a);
+        friend std::ostream& operator<<(std::ostream& os, const Angle& a);
         friend Angle operator+(const Angle& lhs, const Angle& rhs);
         friend Angle operator+(const Angle& lhs, float s);
         friend Angle operator-(const Angle& lhs, const Angle& rhs);
