@@ -41,7 +41,7 @@ namespace grynca {
     }
 
     inline Angle Vec2::getAngle()const {
-        return Angle(atan2(v_.y, v_.x));
+        return Angle(atan2(-v_.y, v_.x));       // positive angle is clockwise
     }
 
     inline float Vec2::getSqrLen()const {

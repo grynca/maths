@@ -9,7 +9,7 @@ include_directories(c:/DEV/libs/mingw/glm/)
 include_directories(c:/DEV/gamedev/Base/src/)
 include_directories(src/)
 
-set(SOURCE_FILES main.cpp
+set(SOURCE_FILES test/main.cpp
  src/maths.h
  src/maths/Angle.h
  src/maths/Angle.inl
