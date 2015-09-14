@@ -44,15 +44,26 @@ int main() {
     assert(t1 == t2);
 
     Shape s1;
-    s1.set<Circle>(Vec2(10, 10), 20);
+    //s1.set<Circle>(Vec2(10, 10), 20);
+    s1.set<Ray>(Vec2(-10, 0), normalize({1, -1}), sqrt(2)*10);
+
 
     Shape s2;
-    s2.set<Rect>(Vec2(15, 15), Vec2(5, 10), Vec2(0, 0), Angle(Angle::Pi/2));
+    s2.set<Ray>(Vec2(-10, -10), normalize({1, 1}), sqrt(2)*20);
+    //s2.set<Rect>(Vec2(15, 15), Vec2(5, 10), Vec2(0, 0), Angle(Angle::Pi/2));
+
+    Vec2 rslt = Mat3::createRotationT(Angle::Pi/2)*Vec2(1.0, 0.0);
+    Vec2 rslt2 = Vec2(1.0, 0.0).rotate(Angle::Pi/2);
+    assert(rslt == rslt2);
 
     OverlapInfo oi;
     if (s1.overlaps(s2, oi)) {
         std::cout << "overlap: " << std::endl;
-        std::cout << "dirOut=" << oi.dirOut << ", depth= " << oi.depth << std::endl;
+        std::cout << "dirOut=" << oi.getDirOut() << ", depth= " << oi.getDepth() << std::endl;
+        std::cout << "intersections: " << std::endl;
+        for (uint32_t i=0; i<oi.getIntersectionsCount(); ++i) {
+            std::cout << " " << oi.getIntersection(i) << std::endl;
+        }
     }
 
 

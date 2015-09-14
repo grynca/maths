@@ -61,6 +61,10 @@ namespace grynca {
         return *this;
     }
 
+    inline Angle Angle::operator-()const {
+        return Angle(-rads_);
+    }
+
     inline float Angle::mod_Pi_(float x) {
     //static
         float x1 = x * (1.0f / Pi);

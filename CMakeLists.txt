@@ -5,8 +5,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -std=gnu++0x" )
 # for profiling
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fno-omit-frame-pointer -gdwarf-2" )
 
-include_directories(c:/DEV/libs/mingw/glm/)
-include_directories(c:/DEV/gamedev/Base/src/)
+include_directories(/home/grynca/DEV/gamedev/base/src/)
 include_directories(src/)
 
 set(SOURCE_FILES test/main.cpp
@@ -27,11 +26,14 @@ set(SOURCE_FILES test/main.cpp
  src/maths/Transform.h
  src/maths/Transform.inl
  src/maths/shapes/OverlapInfo.h
+ src/maths/shapes/OverlapInfo.inl
  src/maths/shapes/ARect.h
  src/maths/shapes/ARect.inl
  src/maths/shapes/ShapeTypes.h
  src/maths/shapes/Rect.h
  src/maths/shapes/Rect.inl
- )
+ src/maths/shapes/Ray.h
+ src/maths/shapes/Ray.inl
+)
 
 add_executable(maths ${SOURCE_FILES} )

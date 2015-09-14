@@ -1,6 +1,7 @@
 #include "ARect.h"
 #include "OverlapInfo.h"
 #include "Circle.h"
+#include "Ray.h"
 
 namespace grynca {
 
@@ -60,6 +61,16 @@ namespace grynca {
         size_ = s;
     }
 
+    inline bool ARect::overlaps(const Ray& r)const {
+        NEVER_GET_HERE("Not implemented");
+        return false;
+    }
+
+    inline bool ARect::overlaps(const Ray& r, OverlapInfo& oi)const {
+        NEVER_GET_HERE("Not implemented");
+        return false;
+    }
+
     inline bool ARect::overlaps(const ARect& r)const {
         return (fabs(lefttop_.getX() - r.lefttop_.getX()) * 2 < (getWidth() + r.getWidth()))
                && (fabs(lefttop_.getY() - r.lefttop_.getY()) * 2 < (getHeight() + r.getHeight()));
@@ -79,18 +90,18 @@ namespace grynca {
                 if (x_overlap < y_overlap) {
                     // Point towards B knowing that n points from A to B
                     if(d.getX() < 0)
-                        oi.dirOut = {-1, 0};
+                        oi.dir_out_ = {-1, 0};
                     else
-                        oi.dirOut = {0, 0};
-                    oi.depth = x_overlap;
+                        oi.dir_out_ = {0, 0};
+                    oi.depth_ = x_overlap;
                 }
                 else {
                     // Point toward B knowing that n points from A to B
                     if(d.getY() < 0)
-                        oi.dirOut= {0, -1};
+                        oi.dir_out_ = {0, -1};
                     else
-                        oi.dirOut = {0, 1};
-                    oi.depth = y_overlap;
+                        oi.dir_out_ = {0, 1};
+                    oi.depth_ = y_overlap;
                 }
                 return true;
             }
@@ -104,7 +115,7 @@ namespace grynca {
 
     inline bool ARect::overlaps(const Circle& c, OverlapInfo& oi)const {
         bool rslt = c.overlaps(*this, oi);
-        oi.dirOut = - oi.dirOut;
+        oi.dir_out_ = - oi.dir_out_;
         return rslt;
     }
 

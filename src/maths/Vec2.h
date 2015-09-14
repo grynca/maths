@@ -22,8 +22,11 @@ namespace grynca {
         friend bool operator==(const Vec2& v1, const Vec2& v2);
         friend bool operator!=(const Vec2& v1, const Vec2& v2);
         friend std::ostream& operator <<(std::ostream& os, const Vec2& v);
+        friend float cross(const Vec2& v1, const Vec2& v2);
+        friend Vec2 normalize(const Vec2& v);
     public:
-        Vec2(float x=0.0f, float y=0.0f);
+        Vec2();
+        Vec2(float x, float y);
 
         // When in (+Ydown, +Xright coords. frame) positive rotation is clockwise
         Vec2 rotate(const Angle& a)const;
@@ -58,7 +61,7 @@ namespace grynca {
         Vec2& operator/=(const Vec2& v);        // elementwise division
         Vec2& operator+=(const Vec2& v);
         Vec2& operator-=(const Vec2& v);
-        Vec2 operator-();
+        Vec2 operator-()const;
     private:
         Vec2(const glm::vec2& v);
 

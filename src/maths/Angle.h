@@ -36,6 +36,7 @@ namespace grynca {
         Angle& operator-=(const Angle& v);
         Angle& operator*=(float s);
         Angle& operator/=(float s);
+        Angle operator-()const;
     private:
         static float mod_Pi_(float x);      // wraps angle to (-Pi, Pi)
 

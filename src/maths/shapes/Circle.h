@@ -8,6 +8,7 @@ namespace grynca {
     class OverlapInfo;
     class Rect;
     class ARect;
+    class Ray;
 
     class Circle {
         friend std::ostream& operator << (std::ostream& os, Circle& c);
@@ -22,6 +23,8 @@ namespace grynca {
 
         ARect calcARectBound()const;
 
+        bool overlaps(const Ray& r)const;
+        bool overlaps(const Ray& r, OverlapInfo& oi)const;
         bool overlaps(const Circle& c)const;
         bool overlaps(const Circle& c, OverlapInfo& oi)const;
         bool overlaps(const ARect& r)const;

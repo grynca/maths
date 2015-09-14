@@ -8,6 +8,7 @@ namespace grynca {
     class Angle;
     class Vec2;
 
+    // Col-major matrix
     class Mat3 {
         friend Vec2 operator*(const Mat3& t, const Vec2& v);
         friend Mat3 operator*(const Mat3& t, const Mat3& m);

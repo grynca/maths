@@ -1,5 +1,6 @@
 #include "Rect.h"
 #include "OverlapInfo.h"
+#include "Ray.h"
 
 namespace grynca {
 
@@ -99,6 +100,16 @@ namespace grynca {
         return ARect(lefttop, rightbot-lefttop);
     }
 
+    inline bool Rect::overlaps(const Ray& r)const {
+        NEVER_GET_HERE("Not implemented");
+        return false;
+    }
+
+    inline bool Rect::overlaps(const Ray& r, OverlapInfo& oi)const {
+        NEVER_GET_HERE("Not implemented");
+        return false;
+    }
+
     inline bool Rect::overlaps(const Rect& r)const {
         // SAT
         Vec2 axes[4] = {
@@ -165,9 +176,9 @@ namespace grynca {
             }
         }
 
-        oi.depth = smallest_overlap;
-        oi.dirOut = axes[penetration_axis];
-        return false;
+        oi.depth_ = smallest_overlap;
+        oi.dir_out_ = axes[penetration_axis];
+        return true;
     }
 
     inline bool Rect::overlaps(const Circle& c)const {
@@ -176,17 +187,17 @@ namespace grynca {
 
     inline bool Rect::overlaps(const Circle& c, OverlapInfo& oi)const {
         bool rslt = c.overlaps(*this, oi);
-        oi.dirOut = - oi.dirOut;
+        oi.dir_out_ = - oi.dir_out_;
         return rslt;
     }
 
     inline bool Rect::overlaps(const ARect& r)const {
-        assert(!"Not implemented yet!");
+        NEVER_GET_HERE("Not implemented");
         return false;
     }
 
     inline bool Rect::overlaps(const ARect& r, OverlapInfo& oi)const {
-        assert(!"Not implemented yet!");
+        NEVER_GET_HERE("Not implemented");
         return false;
     }
 
@@ -195,20 +206,21 @@ namespace grynca {
     }
 
     inline Vec2 Rect::getRT_(const Vec2& rot_offset)const {
-        return position_+(getWidthDir()*getSize())+rot_offset;
+        return getLT_(rot_offset)+(getWidthDir()*getSize().getX());
     }
 
     inline Vec2 Rect::getRB_(const Vec2& rot_offset)const {
-        return position_+(getSizeDir()*getSize())+rot_offset;
+        return getRT_(rot_offset)+(getHeightDir()*getSize().getY());
     }
 
     inline Vec2 Rect::getLB_(const Vec2& rot_offset)const {
-        return position_+(getHeightDir()*getSize())+rot_offset;
+        return getLT_(rot_offset)+(getHeightDir()*getSize().getY());
     }
 
-    inline std::ostream& operator << (std::ostream& os, Rect& r) {
+    inline std::ostream& operator << (std::ostream& os, const Rect& r) {
         os << "Rect[p=(" << r.position_.getX() << ", " << r.position_.getY() << "), s=("
-        << r.size_.getX() << ", " << r.size_.getY() << "), r=" << r.rotation_ << "]" << std::endl;
+        << r.size_.getX() << ", " << r.size_.getY() << "), o=(" << r.offset_.getX() << ", " << r.offset_.getY()
+        << "), r=" << r.rotation_ << "]" << std::endl;
         return os;
     }
 

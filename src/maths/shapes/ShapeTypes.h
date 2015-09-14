@@ -8,6 +8,7 @@
 namespace grynca {
 
     typedef TypesPack<
+            Ray,
             Circle,
             ARect,
             Rect

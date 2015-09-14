@@ -2,6 +2,7 @@
 #include "OverlapInfo.h"
 #include "ARect.h"
 #include "Rect.h"
+#include "Ray.h"
 
 namespace grynca {
 
@@ -30,6 +31,16 @@ namespace grynca {
         return {c_-Vec2(r_, r_), Vec2(d, d)};
     }
 
+    inline bool Circle::overlaps(const Ray& r)const {
+        NEVER_GET_HERE("Not implemented");
+        return false;
+    }
+
+    inline bool Circle::overlaps(const Ray& r, OverlapInfo& oi)const {
+        NEVER_GET_HERE("Not implemented");
+        return false;
+    }
+
     inline bool Circle::overlaps(const Circle& c)const {
         return (getCenter() - c.getCenter()).getSqrLen() < ((getRadius()*getRadius())+(c.getRadius()*c.getRadius()));
     }
@@ -42,14 +53,14 @@ namespace grynca {
         float d = sqrt(cc);
         // must check if circles are on different positions (for avoiding division by zero)
         if (d!=0) {
-            oi.depth = (getRadius()+c.getRadius()) - d;
-            oi.dirOut = dv/d;
+            oi.depth_ = (getRadius()+c.getRadius()) - d;
+            oi.dir_out_ = dv/d;
             return true;
         }
 
         // on same position
-        oi.depth = r_;
-        oi.dirOut = {1, 0}; // can be whatever dir
+        oi.depth_ = r_;
+        oi.dir_out_ = {1, 0}; // can be whatever dir
         return true;
 
     }
@@ -96,14 +107,14 @@ namespace grynca {
             return false;
         float d = sqrt(cr);
         if (d!=0) {
-            oi.depth = getRadius() - d;
-            oi.dirOut = dv/d;
+            oi.depth_ = getRadius() - d;
+            oi.dir_out_ = dv/d;
             return true;
         }
 
         // on same position
-        oi.depth = getRadius();
-        oi.dirOut = {1, 0}; // can be whatever dir
+        oi.depth_ = getRadius();
+        oi.dir_out_ = {1, 0}; // can be whatever dir
         return true;
 
     }
@@ -128,7 +139,7 @@ namespace grynca {
             return false;
 
         // rotate penetration normal back
-        oi.dirOut = oi.dirOut.rotate(-r.getSinr(), r.getCosr());
+        oi.dir_out_ = oi.dir_out_.rotate(-r.getSinr(), r.getCosr());
         return true;
     }
 

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://C:/DEV/gamedev/maths/.idea/maths.iml" filepath="C:/DEV/gamedev/maths/.idea/maths.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/maths.iml" filepath="$PROJECT_DIR$/.idea/maths.iml" />
     </modules>
   </component>
 </project>

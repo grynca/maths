@@ -26,8 +26,8 @@ namespace grynca {
         Vec2 sins = sin_r*scale;
         Vec2 coss = cos_r*scale;
 
-        return {coss.getX(), -sins.getX(), 0,
-                sins.getY(), coss.getY(), 0,
+        return {coss.getX(), sins.getX(), 0,
+                -sins.getY(), coss.getY(), 0,
                 translation.getX(), translation.getY(), 1};
 
     }
@@ -46,8 +46,8 @@ namespace grynca {
 
     inline Mat3 Mat3::createRotationT(float sin_r, float cos_r) {
     //static
-        return {cos_r, -sin_r, 0,
-                sin_r, cos_r, 0,
+        return {cos_r, sin_r, 0,
+                -sin_r, cos_r, 0,
                 0, 0, 1};
     }
 

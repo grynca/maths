@@ -5,6 +5,10 @@
 
 namespace grynca {
 
+    inline Vec2::Vec2()
+     : v_(0.0f, 0.0f)
+    {}
+
     inline Vec2::Vec2(float x, float y)
      : v_(x, y)
     {}
@@ -41,7 +45,7 @@ namespace grynca {
     }
 
     inline Angle Vec2::getAngle()const {
-        return Angle(atan2(-v_.y, v_.x));       // positive angle is clockwise
+        return Angle(atan2(v_.y, v_.x));
     }
 
     inline float Vec2::getSqrLen()const {
@@ -134,7 +138,7 @@ namespace grynca {
         return *this;
     }
 
-    inline Vec2 Vec2::operator-() {
+    inline Vec2 Vec2::operator-()const {
         return {-v_};
     }
 
@@ -183,5 +187,13 @@ namespace grynca {
     inline std::ostream& operator <<(std::ostream& os, const Vec2& v) {
         os << "[" << v.getX() << ", " << v.getY() << "]";
         return os;
+    }
+
+    inline float cross(const Vec2& v1, const Vec2& v2) {
+        return v1.getX()*v2.getY() - v1.getY()*v2.getX();
+    }
+
+    inline Vec2 normalize(const Vec2& v) {
+        return Vec2(glm::normalize(v.v_));
     }
 }

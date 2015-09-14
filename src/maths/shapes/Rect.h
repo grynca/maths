@@ -8,10 +8,11 @@ namespace grynca {
     class ARect;
     class Circle;
     class OverlapInfo;
+    class Ray;
 
     // general (unaligned) rectangle
     class Rect {
-        friend std::ostream& operator << (std::ostream& os, Rect& r);
+        friend std::ostream& operator << (std::ostream& os, const Rect& r);
     public:
         Rect(const Vec2& position = {0,0}, const Vec2& size = {0,0} , const Vec2& offset = {0, 0}, Angle rot = {0});
 
@@ -40,6 +41,8 @@ namespace grynca {
 
         ARect calcARectBound()const;
 
+        bool overlaps(const Ray& r)const;
+        bool overlaps(const Ray& r, OverlapInfo& oi)const;
         bool overlaps(const Rect& r)const;
         bool overlaps(const Rect& r, OverlapInfo& oi)const;
         bool overlaps(const Circle& c)const;
