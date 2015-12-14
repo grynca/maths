@@ -19,7 +19,7 @@ namespace grynca {
         const Vec2& getScale()const;
         const Angle& getRotation()const;
 
-        Mat3 getTransform()const;
+        Mat3 getMatrix()const;
 
         void move(const Vec2& m);
         void moveRelative(const Vec2& m);

@@ -29,7 +29,7 @@ namespace grynca {
         return rotation_;
     }
 
-    inline Mat3 Transform::getTransform()const {
+    inline Mat3 Transform::getMatrix()const {
         return Mat3::createTransform(position_, rotation_, scale_);
     }
 

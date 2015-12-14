@@ -193,6 +193,11 @@ namespace grynca {
         return v1.getX()*v2.getY() - v1.getY()*v2.getX();
     }
 
+    inline float dot(const Vec2& v1, const Vec2& v2) {
+        return glm::dot(v1.v_, v2.v_);
+    }
+
+
     inline Vec2 normalize(const Vec2& v) {
         return Vec2(glm::normalize(v.v_));
     }

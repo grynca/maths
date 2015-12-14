@@ -101,13 +101,13 @@ namespace grynca {
     }
 
     inline bool Rect::overlaps(const Ray& r)const {
-        NEVER_GET_HERE("Not implemented");
-        return false;
+        return r.overlaps(*this);
     }
 
     inline bool Rect::overlaps(const Ray& r, OverlapInfo& oi)const {
-        NEVER_GET_HERE("Not implemented");
-        return false;
+        bool rslt = r.overlaps(*this, oi);
+        oi.dir_out_ = - oi.dir_out_;
+        return rslt;
     }
 
     inline bool Rect::overlaps(const Rect& r)const {

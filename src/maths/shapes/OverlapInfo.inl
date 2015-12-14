@@ -4,7 +4,7 @@
 namespace grynca {
 
     inline OverlapInfo::OverlapInfo()
-     : intersections_count_(0)
+     : depth_(0), intersections_count_(0)
     {}
 
     inline const Vec2& OverlapInfo::getDirOut()const{

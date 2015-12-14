@@ -85,13 +85,81 @@ namespace grynca {
         return false;
     }
 
-    inline bool Ray::overlaps(const Circle& c)const {
-        NEVER_GET_HERE("Not implemented.");
+    inline bool Ray::overlaps(const Circle& circle)const {
+        Vec2 d = dir_*length_;
+        Vec2 f = start_ - circle.getCenter();
+
+        float a = d.getSqrLen();
+        float b = 2*dot(f, d);
+        float c = f.getSqrLen() - circle.getRadius()*circle.getRadius();
+
+        float discriminant = b*b-4*a*c;
+        if (discriminant >= 0) {
+            discriminant = (float)sqrt(discriminant);
+
+            float t1 = (-b - discriminant)/(2*a);
+            float t2 = (-b + discriminant)/(2*a);
+
+            if( t1 >= 0 && t1 <= 1 )
+                return true;
+
+            if( t2 >= 0 && t2 <= 1 )
+                return true;
+        }
         return false;
     }
 
-    inline bool Ray::overlaps(const Circle& c, OverlapInfo& oi)const {
-        NEVER_GET_HERE("Not implemented.");
+    inline bool Ray::overlaps(const Circle& circle, OverlapInfo& oi)const {
+        Vec2 d = dir_*length_;
+        Vec2 f = start_ - circle.getCenter();
+
+        float a = d.getSqrLen();
+        float b = 2*dot(f, d);
+        float c = f.getSqrLen() - circle.getRadius()*circle.getRadius();
+
+        float discriminant = b*b-4*a*c;
+        if (discriminant >= 0) {
+            // ray didn't totally miss sphere, so there is a solution to the equation.
+            discriminant = (float)sqrt(discriminant);
+
+            // either solution may be on or off the ray so need to test both t1 is
+            // always the smaller value, because BOTH discriminant and a are nonnegative.
+            float t1 = (-b - discriminant)/(2*a);
+            float t2 = (-b + discriminant)/(2*a);
+
+            // 3x HIT cases:
+            //          -o->             --|-->  |            |  --|->
+            // Impale(t1 hit,t2 hit), Poke(t1 hit,t2>1), ExitWound(t1<0, t2 hit),
+
+            // 3x MISS cases:
+            //       ->  o                     o ->              | -> |
+            // FallShort (t1>1,t2>1), Past (t1<0,t2<0), CompletelyInside(t1<0, t2>1)
+
+            if( t1 >= 0 && t1 <= 1 ) {
+                // t1 is the intersection, and it's closer than t2
+                // (since t1 uses -b - discriminant)
+                // Impale
+                oi.addIntersection_(start_ + t1*d);
+                if( t2 >= 0 && t2 <= 1 ) {
+                    // Poke
+                    oi.addIntersection_(start_ + t2*d);
+                }
+                oi.depth_ = (1.0f - t1)*length_;
+                oi.dir_out_ = -dir_;
+                return true;
+            }
+
+            if( t2 >= 0 && t2 <= 1 ) {
+                // ExitWound
+                oi.addIntersection_(start_ + t2*d);
+                oi.depth_ = t2*length_;
+                oi.dir_out_ = dir_;
+                return true;
+            }
+
+            // no intn: FallShort, Past, CompletelyInside
+        }
+        // no intersection
         return false;
     }
 

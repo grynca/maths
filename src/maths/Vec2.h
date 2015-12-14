@@ -22,7 +22,8 @@ namespace grynca {
         friend bool operator==(const Vec2& v1, const Vec2& v2);
         friend bool operator!=(const Vec2& v1, const Vec2& v2);
         friend std::ostream& operator <<(std::ostream& os, const Vec2& v);
-        friend float cross(const Vec2& v1, const Vec2& v2);
+        friend float cross(const Vec2& v1, const Vec2& v2);     // 2D "cross", useful for telling on which side of first vector second vector is
+        friend float dot(const Vec2& v1, const Vec2& v2);
         friend Vec2 normalize(const Vec2& v);
     public:
         Vec2();

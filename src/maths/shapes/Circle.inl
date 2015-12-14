@@ -32,23 +32,27 @@ namespace grynca {
     }
 
     inline bool Circle::overlaps(const Ray& r)const {
-        NEVER_GET_HERE("Not implemented");
-        return false;
+        return r.overlaps(*this);
     }
 
     inline bool Circle::overlaps(const Ray& r, OverlapInfo& oi)const {
-        NEVER_GET_HERE("Not implemented");
-        return false;
+        bool rslt = r.overlaps(*this, oi);
+        oi.dir_out_ = -oi.dir_out_;
+        return rslt;
     }
 
     inline bool Circle::overlaps(const Circle& c)const {
-        return (getCenter() - c.getCenter()).getSqrLen() < ((getRadius()*getRadius())+(c.getRadius()*c.getRadius()));
+        float radsum_sqr = getRadius()+c.getRadius();
+        radsum_sqr *= radsum_sqr;
+        return (getCenter() - c.getCenter()).getSqrLen() < radsum_sqr;
     }
 
     inline bool Circle::overlaps(const Circle& c, OverlapInfo& oi)const {
         Vec2 dv = getCenter()-c.getCenter();
         float cc = dv.getSqrLen();
-        if (cc > ((getRadius()*getRadius())+(c.getRadius()*c.getRadius())))
+        float radsum_sqr = getRadius()+c.getRadius();
+        radsum_sqr *= radsum_sqr;
+        if (cc > radsum_sqr)
             return false;
         float d = sqrt(cc);
         // must check if circles are on different positions (for avoiding division by zero)
