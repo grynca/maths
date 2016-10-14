@@ -2,81 +2,55 @@
 <module type="CPP_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/src/maths/Angle.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/maths/Angle.inl" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/maths/Mat3.inl" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/maths/Vec2.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/maths/Interval.inl" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/maths/Transform.inl" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/maths/Vec2.inl" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/maths/shapes/Circle.inl" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/maths/shapes/ShapeTypes.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/maths/shapes/ARect.inl" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/maths/shapes/Shape.inl" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/maths/shapes/Shape_internal.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/maths/shapes/OverlapInfo.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/maths/shapes/Shape.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/maths/shapes/Rect.inl" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/maths/shapes/Circle.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/maths/shapes/ARect.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/maths/shapes/Ray.inl" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/maths/shapes/Rect.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/maths/shapes/OverlapInfo.inl" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/maths/shapes/Ray.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/maths/Transform.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/maths/Mat3.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/maths/Interval.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/maths.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test_gon.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test_polygons.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/include/maths/Transform.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/include/maths/Angle.inl" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/include/maths/Mat3.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/include/maths/Vec2.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/include/maths/Interval.inl" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/include/maths/Transform.inl" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/include/maths/Vec2.inl" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/include/maths/shapes/Circle.inl" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/include/maths/shapes/ShapeTypes.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/include/maths/shapes/ARect.inl" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/include/maths/shapes/Pgon.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/include/maths/shapes/Shape.inl" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/include/maths/shapes/Shape_internal.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/include/maths/shapes/OverlapInfo.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/include/maths/shapes/Shape.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/include/maths/shapes/Rect.inl" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/include/maths/shapes/Circle.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/include/maths/shapes/ARect.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/include/maths/shapes/Pgon.inl" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/include/maths/shapes/Ray.inl" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/include/maths/shapes/Rect.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/include/maths/shapes/OverlapInfo.inl" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/include/maths/shapes/Ray.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/include/maths/Mat3.inl" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/include/maths/Angle.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/include/maths/Interval.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/include/maths.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/test/main.cpp" isTestSource="false" />
-      <excludeFolder url="file://$MODULE_DIR$/build" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library">
       <library name="Header Search Paths">
         <CLASSES>
-          <root url="file:///usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed" />
-          <root url="file:///usr/lib/gcc/x86_64-linux-gnu/4.8/include" />
+          <root url="file:///usr/lib/gcc/x86_64-linux-gnu/5/include-fixed" />
+          <root url="file:///usr/lib/gcc/x86_64-linux-gnu/5/include" />
           <root url="file:///usr/include" />
           <root url="file:///usr/local/include" />
-          <root url="file://$MODULE_DIR$/src" />
           <root url="file://$MODULE_DIR$/../base/src" />
         </CLASSES>
         <SOURCES>
-          <root url="file:///usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed" />
-          <root url="file:///usr/lib/gcc/x86_64-linux-gnu/4.8/include" />
+          <root url="file:///usr/lib/gcc/x86_64-linux-gnu/5/include-fixed" />
+          <root url="file:///usr/lib/gcc/x86_64-linux-gnu/5/include" />
           <root url="file:///usr/include" />
           <root url="file:///usr/local/include" />
-          <root url="file://$MODULE_DIR$/src" />
           <root url="file://$MODULE_DIR$/../base/src" />
         </SOURCES>
-        <excluded>
-          <root url="file://$MODULE_DIR$/src/maths/Angle.h" />
-          <root url="file://$MODULE_DIR$/src/maths/Angle.inl" />
-          <root url="file://$MODULE_DIR$/src/maths/Mat3.inl" />
-          <root url="file://$MODULE_DIR$/src/maths/Vec2.h" />
-          <root url="file://$MODULE_DIR$/src/maths/Interval.inl" />
-          <root url="file://$MODULE_DIR$/src/maths/Transform.inl" />
-          <root url="file://$MODULE_DIR$/src/maths/Vec2.inl" />
-          <root url="file://$MODULE_DIR$/src/maths/shapes/Circle.inl" />
-          <root url="file://$MODULE_DIR$/src/maths/shapes/ShapeTypes.h" />
-          <root url="file://$MODULE_DIR$/src/maths/shapes/ARect.inl" />
-          <root url="file://$MODULE_DIR$/src/maths/shapes/Shape.inl" />
-          <root url="file://$MODULE_DIR$/src/maths/shapes/Shape_internal.h" />
-          <root url="file://$MODULE_DIR$/src/maths/shapes/OverlapInfo.h" />
-          <root url="file://$MODULE_DIR$/src/maths/shapes/Shape.h" />
-          <root url="file://$MODULE_DIR$/src/maths/shapes/Rect.inl" />
-          <root url="file://$MODULE_DIR$/src/maths/shapes/Circle.h" />
-          <root url="file://$MODULE_DIR$/src/maths/shapes/ARect.h" />
-          <root url="file://$MODULE_DIR$/src/maths/shapes/Ray.inl" />
-          <root url="file://$MODULE_DIR$/src/maths/shapes/Rect.h" />
-          <root url="file://$MODULE_DIR$/src/maths/shapes/OverlapInfo.inl" />
-          <root url="file://$MODULE_DIR$/src/maths/shapes/Ray.h" />
-          <root url="file://$MODULE_DIR$/src/maths/Transform.h" />
-          <root url="file://$MODULE_DIR$/src/maths/Mat3.h" />
-          <root url="file://$MODULE_DIR$/src/maths/Interval.h" />
-          <root url="file://$MODULE_DIR$/src/maths.h" />
-        </excluded>
       </library>
     </orderEntry>
   </component>
