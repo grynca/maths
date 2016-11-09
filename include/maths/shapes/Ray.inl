@@ -11,11 +11,11 @@ namespace grynca {
     inline Ray::Ray() {}
 
     inline Ray::Ray(const Vec2& start, const Vec2& end)
-     : start_(start), dir_(end-start), flags_(0), length_(1.0f)
+     : start_(start), dir_(end-start), length_(1.0f), flags_(0)
     {
     }
 
-    inline Ray::Ray(const Vec2& start, const Vec2& dir, float length)
+    inline Ray::Ray(const Vec2& start, const Vec2& dir, f32 length)
      : start_(start), dir_(dir), length_(length), flags_(0)
     {
         flags_[bDirNormalized] = true;
@@ -61,7 +61,7 @@ namespace grynca {
         return dir_*length_;
     }
 
-    inline float Ray::getLength()const {
+    inline f32 Ray::getLength()const {
         return length_;
     }
 
@@ -86,7 +86,7 @@ namespace grynca {
         }
     }
 
-    inline void Ray::setLength(float l) {
+    inline void Ray::setLength(f32 l) {
         ASSERT(isDirNormalized());
         length_ = l;
     }
@@ -109,17 +109,17 @@ namespace grynca {
         Vec2 rv1 = getToEndVec();
         Vec2 rv2 = r.getToEndVec();
         // http://www.codeproject.com/Tips/862988/Find-the-Intersection-Point-of-Two-Line-Segments
-        float dxd = cross(rv1, rv2);
+        f32 dxd = cross(rv1, rv2);
 
         if (dxd == 0.0f)
             // parallel or collinear
             return false;
 
-        //float sxd = Vec2::cross(r.start_-start_, dir_);
+        //f32 sxd = Vec2::cross(r.start_-start_, dir_);
         // sxd can be checked for null if we want to distinguish between parallel and collinear
 
-        float t = cross(r.start_-start_, rv2)/dxd;
-        float u = cross(r.start_-start_, rv1)/dxd;
+        f32 t = cross(r.start_-start_, rv2)/dxd;
+        f32 u = cross(r.start_-start_, rv1)/dxd;
 
         return (0 <=t && t <= 1) && (0 <= u && u <= 1);
     }
@@ -127,14 +127,14 @@ namespace grynca {
     inline bool Ray::overlaps(const Ray& r, OverlapInfo& oi)const {
         Vec2 rv1 = getToEndVec();
         Vec2 rv2 = r.getToEndVec();
-        float dxd = cross(rv1, rv2);
+        f32 dxd = cross(rv1, rv2);
 
         if (dxd == 0)
             // parallel or collinear
             return false;
 
-        float t = cross(r.start_-start_, rv2)/dxd;
-        float u = cross(r.start_-start_, rv1)/dxd;
+        f32 t = cross(r.start_-start_, rv2)/dxd;
+        f32 u = cross(r.start_-start_, rv1)/dxd;
 
         if ( (0 <=t && t <= 1) && (0 <= u && u <= 1) ) {
             oi.addIntersection_(start_+t*rv1);
@@ -149,16 +149,16 @@ namespace grynca {
         Vec2 d = dir_*length_;
         Vec2 f = start_ - circle.getCenter();
 
-        float a = d.getSqrLen();
-        float b = 2*dot(f, d);
-        float c = f.getSqrLen() - circle.getRadius()*circle.getRadius();
+        f32 a = d.getSqrLen();
+        f32 b = 2*dot(f, d);
+        f32 c = f.getSqrLen() - circle.getRadius()*circle.getRadius();
 
-        float discriminant = b*b-4*a*c;
+        f32 discriminant = b*b-4*a*c;
         if (discriminant >= 0) {
-            discriminant = (float)sqrt(discriminant);
+            discriminant = (f32)sqrt(discriminant);
 
-            float t1 = (-b - discriminant)/(2*a);
-            float t2 = (-b + discriminant)/(2*a);
+            f32 t1 = (-b - discriminant)/(2*a);
+            f32 t2 = (-b + discriminant)/(2*a);
 
             if( t1 >= 0 && t1 <= 1 )
                 return true;
@@ -173,19 +173,19 @@ namespace grynca {
         Vec2 d = dir_*length_;
         Vec2 f = start_ - circle.getCenter();
 
-        float a = d.getSqrLen();
-        float b = 2*dot(f, d);
-        float c = f.getSqrLen() - circle.getRadius()*circle.getRadius();
+        f32 a = d.getSqrLen();
+        f32 b = 2*dot(f, d);
+        f32 c = f.getSqrLen() - circle.getRadius()*circle.getRadius();
 
-        float discriminant = b*b-4*a*c;
+        f32 discriminant = b*b-4*a*c;
         if (discriminant >= 0) {
             // ray didn't totally miss sphere, so there is a solution to the equation.
-            discriminant = (float)sqrt(discriminant);
+            discriminant = (f32)sqrt(discriminant);
 
             // either solution may be on or off the ray so need to test both t1 is
             // always the smaller value, because BOTH discriminant and a are nonnegative.
-            float t1 = (-b - discriminant)/(2*a);
-            float t2 = (-b + discriminant)/(2*a);
+            f32 t1 = (-b - discriminant)/(2*a);
+            f32 t2 = (-b + discriminant)/(2*a);
 
             // 3x HIT cases:
             //          -o->             --|-->  |            |  --|->
@@ -232,13 +232,13 @@ namespace grynca {
         rect_bounds[0] = rect.getLeftTop();
         rect_bounds[1] = rect.getRightBot();
 
-        float tmin = (rect_bounds[flags_[bDirXSign]].getX() - start_.getX()) * inv_dir_.getX();
-        float tymax = (rect_bounds[1-(int)flags_[bDirYSign]].getY() - start_.getY()) * inv_dir_.getY();
+        f32 tmin = (rect_bounds[flags_[bDirXSign]].getX() - start_.getX()) * inv_dir_.getX();
+        f32 tymax = (rect_bounds[1-(int)flags_[bDirYSign]].getY() - start_.getY()) * inv_dir_.getY();
         if (tmin > tymax)
             return false;
 
-        float tmax = (rect_bounds[1-(int)flags_[bDirXSign]].getX() - start_.getX()) * inv_dir_.getX();
-        float tymin = (rect_bounds[flags_[bDirYSign]].getY() - start_.getY()) * inv_dir_.getY();
+        f32 tmax = (rect_bounds[1-(int)flags_[bDirXSign]].getX() - start_.getX()) * inv_dir_.getX();
+        f32 tymin = (rect_bounds[flags_[bDirYSign]].getY() - start_.getY()) * inv_dir_.getY();
 
         return (tymin <= tmax);
     }
@@ -259,7 +259,7 @@ namespace grynca {
         };
 
 
-        for (uint32_t i=0; i<4; ++i) {
+        for (u32 i=0; i<4; ++i) {
             if (r.overlaps(rays[i]))
                 return true;
         }
@@ -278,8 +278,8 @@ namespace grynca {
 
         // TODO: depth pocitat nejak lip, aby k necemu byla
         bool overlap_rslt = false;
-        float prev_depth = 0.0f;
-        for (uint32_t i=0; i<4; ++i) {
+        f32 prev_depth = 0.0f;
+        for (u32 i=0; i<4; ++i) {
             if (overlaps(rays[i], oi)) {
                 overlap_rslt = true;
                 if (oi.getIntersectionsCount() == 1) {
@@ -309,7 +309,7 @@ namespace grynca {
         return false;
     }
 
-    inline void Ray::normalize_(Vec2& dir_io, float& len_out, std::bitset<bfCount>& flags_out) {
+    inline void Ray::normalize_(Vec2& dir_io, f32& len_out, std::bitset<bfCount>& flags_out) {
     // static
         len_out = dir_io.getLen();
         dir_io = dir_io/len_out;

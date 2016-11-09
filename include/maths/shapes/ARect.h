@@ -17,17 +17,17 @@ namespace grynca {
     public:
         ARect(const Vec2& lt = {0,0}, const Vec2& size = {0, 0});
         ARect(const Vec2 bounds[2]);
-        ARect(const Vec2* points, uint32_t points_cnt);     // calculates bound for points
+        ARect(const Vec2* points, u32 points_cnt);     // calculates bound for points
 
-        float getWidth()const;
-        float getHeight()const;
-        float getX()const;
-        float getY()const;
+        f32 getWidth()const;
+        f32 getHeight()const;
+        f32 getX()const;
+        f32 getY()const;
         Vec2 getSize()const;
 
-        // 4 floats - left, top, right, bottom
-        float* getDataPtr();
-        const float* getDataPtr() const;
+        // 4 f32s - left, top, right, bottom
+        f32* getDataPtr();
+        const f32* getDataPtr() const;
 
         const Vec2& getLeftTop()const;
         Vec2 getRightTop()const;

@@ -14,13 +14,13 @@ namespace grynca {
     class Circle {
         friend std::ostream& operator << (std::ostream& os, Circle& c);
     public:
-        Circle(const Vec2& center = {0,0}, float radius = 0);
+        Circle(const Vec2& center = {0,0}, f32 radius = 0);
 
         void setCenter(const Vec2& c);
-        void setRadius(float r);
+        void setRadius(f32 r);
 
         const Vec2& getCenter()const;
-        float getRadius()const;
+        f32 getRadius()const;
 
         ARect calcARectBound()const;
 
@@ -36,7 +36,7 @@ namespace grynca {
         bool overlaps(const Pgon& p, OverlapInfo& oi)const;
     private:
         Vec2 c_;
-        float r_;
+        f32 r_;
     };
 
 }

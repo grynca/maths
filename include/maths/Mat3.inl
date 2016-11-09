@@ -5,9 +5,9 @@ namespace grynca {
     inline Mat3::Mat3()
     {}
 
-    inline Mat3:: Mat3(float v00, float v01, float v02,
-                       float v10, float v11, float v12,
-                       float v20, float v21, float v22)
+    inline Mat3:: Mat3(f32 v00, f32 v01, f32 v02,
+                       f32 v10, f32 v11, f32 v12,
+                       f32 v20, f32 v21, f32 v22)
      : m_(v00, v01, v02, v10, v11, v12, v20, v21, v22)
     {}
 
@@ -21,7 +21,7 @@ namespace grynca {
         return createTransform(translation, rotation.getSin(), rotation.getCos(), scale);
     }
 
-    inline Mat3 Mat3::createTransform(const Vec2& translation, float sin_r, float cos_r, const Vec2& scale) {
+    inline Mat3 Mat3::createTransform(const Vec2& translation, f32 sin_r, f32 cos_r, const Vec2& scale) {
     // static
         Vec2 sins = sin_r*scale;
         Vec2 coss = cos_r*scale;
@@ -44,7 +44,7 @@ namespace grynca {
         return createRotationT(rotation.getSin(), rotation.getCos());
     }
 
-    inline Mat3 Mat3::createRotationT(float sin_r, float cos_r) {
+    inline Mat3 Mat3::createRotationT(f32 sin_r, f32 cos_r) {
     //static
         return {cos_r, sin_r, 0,
                 -sin_r, cos_r, 0,
@@ -75,11 +75,11 @@ namespace grynca {
         return Mat3(glm::inverse(m.getInternal()));
     }
 
-    inline float& Mat3::val(size_t row, size_t col) {
+    inline f32& Mat3::val(size_t row, size_t col) {
         return m_[row][col];
     }
 
-    inline float Mat3::val(size_t row, size_t col)const {
+    inline f32 Mat3::val(size_t row, size_t col)const {
         return m_[row][col];
     }
 

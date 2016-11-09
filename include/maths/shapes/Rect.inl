@@ -61,11 +61,11 @@ namespace grynca {
         return rotation_;
     }
 
-    inline float Rect::getSinr()const {
+    inline f32 Rect::getSinr()const {
         return sinr_;
     }
 
-    inline float Rect::getCosr()const {
+    inline f32 Rect::getCosr()const {
         return cosr_;
     }
 
@@ -148,19 +148,19 @@ namespace grynca {
         r.getCorners(corners2);
 
         int penetration_axis = -1;
-        float smallest_overlap = std::numeric_limits<float>::max();
+        f32 smallest_overlap = std::numeric_limits<f32>::max();
         for (int i=0; i<4; ++i) {
             // project corners on axis
             Interval i1 = axes[i].projectPoints(corners1, 4);
             Interval i2 = axes[i].projectPoints(corners2, 4);
-            float o;
+            f32 o;
             if (!i1.overlaps(i2, o))
                 // it is separation axis
                 return false;
             if (i1.contains(i2) || i2.contains(i1)) {
                 // check containment
-                float mins = fabs(i1.getMin()-i2.getMin());
-                float maxs = fabs(i1.getMax()-i2.getMax());
+                f32 mins = fabs(i1.getMin()-i2.getMin());
+                f32 maxs = fabs(i1.getMax()-i2.getMax());
                 if (mins < maxs)
                     o += mins;
                 else

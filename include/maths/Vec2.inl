@@ -9,7 +9,7 @@ namespace grynca {
      : v_(0.0f, 0.0f)
     {}
 
-    inline Vec2::Vec2(float x, float y)
+    inline Vec2::Vec2(f32 x, f32 y)
      : v_(x, y)
     {}
 
@@ -21,7 +21,7 @@ namespace grynca {
         return rotate(a.getSin(), a.getCos());
     }
 
-    inline Vec2 Vec2::rotate(float sin_r, float cos_r)const {
+    inline Vec2 Vec2::rotate(f32 sin_r, f32 cos_r)const {
         return {v_.x*cos_r-v_.y*sin_r,
                 v_.x*sin_r+v_.y*cos_r};
     }
@@ -30,7 +30,7 @@ namespace grynca {
         return rotateAround(rot_center, a.getSin(), a.getCos());
     }
 
-    inline Vec2 Vec2::rotateAround(const Vec2& rot_center, float sin_r, float cos_r)const {
+    inline Vec2 Vec2::rotateAround(const Vec2& rot_center, f32 sin_r, f32 cos_r)const {
         glm::vec2 dv = v_-rot_center.v_;
         return {dv.x*cos_r-dv.y*sin_r,
                 dv.x*sin_r+dv.y*cos_r};
@@ -48,51 +48,51 @@ namespace grynca {
         return Angle(atan2f(v_.y, v_.x));
     }
 
-    inline float Vec2::getSqrLen()const {
+    inline f32 Vec2::getSqrLen()const {
         return glm::dot(v_, v_);
     }
 
-    inline float Vec2::getLen()const {
+    inline f32 Vec2::getLen()const {
         return glm::length(v_);
     }
 
-    inline float Vec2::getX()const {
+    inline f32 Vec2::getX()const {
         return v_.x;
     }
 
-    inline float Vec2::getY()const {
+    inline f32 Vec2::getY()const {
         return v_.y;
     }
 
-    inline void Vec2::setX(float x) {
+    inline void Vec2::setX(f32 x) {
         v_.x = x;
     }
 
-    inline void Vec2::setY(float y) {
+    inline void Vec2::setY(f32 y) {
         v_.y = y;
     }
 
-    inline float& Vec2::accX() {
+    inline f32& Vec2::accX() {
         return v_.x;
     }
 
-    inline float& Vec2::accY() {
+    inline f32& Vec2::accY() {
         return v_.y;
     }
 
-    inline float& Vec2::val(size_t i) {
+    inline f32& Vec2::val(size_t i) {
         return v_[i];
     }
 
-    inline const float& Vec2::val(size_t i)const {
+    inline const f32& Vec2::val(size_t i)const {
         return v_[i];
     }
 
-    inline float* Vec2::getDataPtr() {
+    inline f32* Vec2::getDataPtr() {
         return &v_[0];
     }
 
-    inline const float* Vec2::getDataPtr() const {
+    inline const f32* Vec2::getDataPtr() const {
         return &v_[0];
     }
 
@@ -104,10 +104,10 @@ namespace grynca {
         if (n_points == 0)
             return Interval();
 
-        float min = glm::dot(v_, points[0].v_);
-        float max = min;
+        f32 min = glm::dot(v_, points[0].v_);
+        f32 max = min;
         for (size_t i=1; i<n_points; ++i) {
-            float p = glm::dot(v_, points[i].v_);
+            f32 p = glm::dot(v_, points[i].v_);
             if (p < min)
                 min = p;
             else if (p > max)
@@ -116,7 +116,7 @@ namespace grynca {
         return Interval(min, max);
     }
 
-    inline Vec2& Vec2::operator*=(float s) {
+    inline Vec2& Vec2::operator*=(f32 s) {
         v_*=s;
         return *this;
     }
@@ -126,7 +126,7 @@ namespace grynca {
         return *this;
     }
 
-    inline Vec2& Vec2::operator/=(float s) {
+    inline Vec2& Vec2::operator/=(f32 s) {
         v_/=s;
         return *this;
     }
@@ -150,11 +150,11 @@ namespace grynca {
         return {-v_};
     }
 
-    inline Vec2 operator*(float s, const Vec2& v) {
+    inline Vec2 operator*(f32 s, const Vec2& v) {
         return {v.v_*s};
     }
 
-    inline Vec2 operator*(const Vec2& v, float s) {
+    inline Vec2 operator*(const Vec2& v, f32 s) {
         return {v.v_*s};
     }
 
@@ -168,7 +168,7 @@ namespace grynca {
         return {v1.v_*v2.v_};
     }
 
-    inline Vec2 operator/(const Vec2& v, float s) {
+    inline Vec2 operator/(const Vec2& v, f32 s) {
         return {v.v_/s};
     }
 
@@ -197,19 +197,19 @@ namespace grynca {
         return os;
     }
 
-    inline float cross(const Vec2& v1, const Vec2& v2) {
+    inline f32 cross(const Vec2& v1, const Vec2& v2) {
         return v1.getX()*v2.getY() - v1.getY()*v2.getX();
     }
 
-    inline float dot(const Vec2& v1, const Vec2& v2) {
+    inline f32 dot(const Vec2& v1, const Vec2& v2) {
         return glm::dot(v1.v_, v2.v_);
     }
 
-    inline bool isOnSegment(const Vec2& p, const Vec2& start, const Vec2& end, float eps) {
+    inline bool isOnSegment(const Vec2& p, const Vec2& start, const Vec2& end, f32 eps) {
         if (!isOnLine(p, start, end, eps))
             return false;
 
-        float dx = end.getX()-start.getX();
+        f32 dx = end.getX()-start.getX();
         if (dx != 0.0f) {
             // TODO: permit on endpoints ?
             return (p.getX() > start.getX()) && (p.getX() < end.getX());
@@ -219,17 +219,17 @@ namespace grynca {
     }
 
 
-    inline bool isOnLine(const Vec2& p, const Vec2& start, const Vec2& end, float eps) {
+    inline bool isOnLine(const Vec2& p, const Vec2& start, const Vec2& end, f32 eps) {
         return fabsf(cross(p-start, end-start)) <= eps;
     }
 
-    inline bool isRightFromLine(const Vec2& p, const Vec2& start, const Vec2& end, float eps) {
-        float c = cross(p-start, end-start);
+    inline bool isRightFromLine(const Vec2& p, const Vec2& start, const Vec2& end, f32 eps) {
+        f32 c = cross(p-start, end-start);
         return c<=-eps;
     }
 
-    inline bool isLeftFromLine(const Vec2& p, const Vec2& start, const Vec2& end, float eps) {
-        float c = cross(p-start, end-start);
+    inline bool isLeftFromLine(const Vec2& p, const Vec2& start, const Vec2& end, f32 eps) {
+        f32 c = cross(p-start, end-start);
         return c>=eps;
     }
 
@@ -237,10 +237,10 @@ namespace grynca {
         return Vec2(glm::normalize(v.v_));
     }
 
-    inline bool overlapLines(const Vec2& s1, const Vec2& e1, const Vec2& s2, const Vec2& e2, float& t1_out) {
+    inline bool overlapLines(const Vec2& s1, const Vec2& e1, const Vec2& s2, const Vec2& e2, f32& t1_out) {
         Vec2 v1(e1-s1);
         Vec2 v2(e2-s2);
-        float dxd = cross(v1, v2);
+        f32 dxd = cross(v1, v2);
 
         if (dxd == 0)
             // parallel or collinear

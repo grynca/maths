@@ -16,12 +16,12 @@ namespace grynca {
         bounds_[1] = bounds[1];
     }
 
-    inline ARect::ARect(const Vec2* points, uint32_t points_cnt) {
+    inline ARect::ARect(const Vec2* points, u32 points_cnt) {
         ASSERT(points_cnt > 0);
 
         bounds_[0] = bounds_[1] = points[0];
 
-        for (uint32_t i=1; i<points_cnt; ++i) {
+        for (u32 i=1; i<points_cnt; ++i) {
             const Vec2& p = points[i];
             if (p.getX() < bounds_[0].getX()) {
                 bounds_[0].setX(p.getX());
@@ -39,19 +39,19 @@ namespace grynca {
         }
     }
 
-    inline float ARect::getWidth()const {
+    inline f32 ARect::getWidth()const {
         return getRightBot().getX() - getLeftTop().getX();
     }
 
-    inline float ARect::getHeight()const {
+    inline f32 ARect::getHeight()const {
         return getRightBot().getY() - getLeftTop().getY();
     }
 
-    inline float ARect::getX()const {
+    inline f32 ARect::getX()const {
         return getLeftTop().getX();
     }
 
-    inline float ARect::getY()const {
+    inline f32 ARect::getY()const {
         return getLeftTop().getY();
     }
 
@@ -59,11 +59,11 @@ namespace grynca {
         return getRightBot() - getLeftTop();
     }
 
-    inline float* ARect::getDataPtr() {
+    inline f32* ARect::getDataPtr() {
         return &bounds_[0].val(0);
     }
 
-    inline const float* ARect::getDataPtr() const {
+    inline const f32* ARect::getDataPtr() const {
         return bounds_[0].getDataPtr();
     }
 
@@ -138,14 +138,14 @@ namespace grynca {
     }
 
     inline bool ARect::overlaps(const ARect& r, OverlapInfo& oi)const {
-        float hw1 = getWidth()*0.5f;
-        float hw2 = r.getWidth()*0.5f;
+        f32 hw1 = getWidth()*0.5f;
+        f32 hw2 = r.getWidth()*0.5f;
         Vec2 d = getCenter() - r.getCenter();
-        float x_overlap = hw1 + hw2 - fabsf(d.getX());
+        f32 x_overlap = hw1 + hw2 - fabsf(d.getX());
         if (x_overlap > 0) {
-            float hh1 = getHeight()*0.5f;
-            float hh2 = r.getHeight()*0.5f;
-            float y_overlap = hh1 + hh2 - fabsf(d.getY());
+            f32 hh1 = getHeight()*0.5f;
+            f32 hh2 = r.getHeight()*0.5f;
+            f32 y_overlap = hh1 + hh2 - fabsf(d.getY());
             if (y_overlap > 0) {
                 // find out which axis is axis of least penetration
                 if (x_overlap < y_overlap) {

@@ -19,7 +19,7 @@ using namespace grynca;
     }
 #endif
 
-static inline void drawSmallRect(SDL_Renderer *r, float x, float y) {
+static inline void drawSmallRect(SDL_Renderer *r, f32 x, f32 y) {
     SDL_Rect rect;
     rect.x = (int)roundf(x)-2;
     rect.y = (int)roundf(y)-2;
@@ -37,15 +37,15 @@ static inline void startPolygonsLoop() {
     bool exit = false;
     bool mouse_down = false;
     int drag_pid = -1;
-    uint32_t hl_pgon = 0;
-    uint32_t hl_pid = 0;
-    uint32_t frame_id = 0;
+    u32 hl_pgon = 0;
+    u32 hl_pid = 0;
+    u32 frame_id = 0;
     grynca::Measure m("update");
 
     fast_vector<Pgon> pgons;
     PgonModifier mod(pgons);
     pgons.push_back();
-    for (uint32_t i=0; i<10; ++i) {
+    for (u32 i=0; i<10; ++i) {
         Vec2 v(randFloatMinMax(50, 900), randFloatMinMax(50, 700));
         pgons[0].addPoint(v);
     }
@@ -53,9 +53,9 @@ static inline void startPolygonsLoop() {
     std::function<void()> main_loop = [&]() {
         m.incCounter();
 #ifdef CONSTANT_DT
-        float dt = CONSTANT_DT;
+        f32 dt = CONSTANT_DT;
 #else
-        float dt = m.calcDt();
+        f32 dt = m.calcDt();
 #endif
 
         SDL_Event evt;
@@ -77,14 +77,14 @@ static inline void startPolygonsLoop() {
                         }break;
                         case (SDLK_s): {
                             BlockMeasure m("polygon split");
-                            uint32_t prev_size = pgons.size();
+                            u32 prev_size = pgons.size();
                             mod.simplify(hl_pgon);
                             std::cout << " Created " << pgons.size()-prev_size << " new polygons. " << std::endl;
                             hl_pid = 0;
                         }break;
                         case (SDLK_d): {
                             BlockMeasure m("polygon decompose to convex.");
-                            uint32_t prev_size = pgons.size();
+                            u32 prev_size = pgons.size();
                             mod.convexize(hl_pgon);
                             std::cout << " Created " << pgons.size()-prev_size << " new polygons. " << std::endl;
                             hl_pid = 0;
@@ -99,7 +99,7 @@ static inline void startPolygonsLoop() {
                             pgons.clear();
                             pgons.push_back();
 
-                            for (uint32_t i=0; i<10; ++i) {
+                            for (u32 i=0; i<10; ++i) {
                                 Vec2 v(randFloatMinMax(50, 900), randFloatMinMax(50, 700));
                                 pgons[0].addPoint(v);
                             }
@@ -183,11 +183,11 @@ static inline void startPolygonsLoop() {
                         Vec2 mouse_pos(evt.button.x, evt.button.y);
                         mouse_down = true;
                         drag_pid = -1;
-                        uint32_t best_pgon = 0;
-                        float best_d = std::numeric_limits<float>::max();
-                        for (uint32_t i=0; i<pgons.size(); ++i) {
-                            for (uint32_t j=0; j<pgons[i].getSize(); ++j) {
-                                float d = (pgons[i].getPoint(j)-mouse_pos).getSqrLen();
+                        u32 best_pgon = 0;
+                        f32 best_d = std::numeric_limits<f32>::max();
+                        for (u32 i=0; i<pgons.size(); ++i) {
+                            for (u32 j=0; j<pgons[i].getSize(); ++j) {
+                                f32 d = (pgons[i].getPoint(j)-mouse_pos).getSqrLen();
                                 if (d < best_d || (d == best_d && hl_pgon == i)) {
                                     best_d = d;
                                     drag_pid = j;
@@ -223,9 +223,9 @@ static inline void startPolygonsLoop() {
         SDL_RenderClear(renderer);
 
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        for (uint32_t i=0; i<pgons.size(); ++i) {
+        for (u32 i=0; i<pgons.size(); ++i) {
             Pgon& p = pgons[i];
-            for (uint32_t j=0; j<p.getSize(); ++j) {
+            for (u32 j=0; j<p.getSize(); ++j) {
                 Vec2& p1 = p.getPoint(j);
                 Vec2& p2 = p.getPoint((j+1)%p.getSize());
                 SDL_RenderDrawLine(renderer, (int)p1.getX(), (int)p1.getY(), (int)p2.getX(), (int)p2.getY());
@@ -233,7 +233,7 @@ static inline void startPolygonsLoop() {
         }
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-        for (uint32_t i=0; i<pgons[hl_pgon].getSize(); ++i) {
+        for (u32 i=0; i<pgons[hl_pgon].getSize(); ++i) {
             drawSmallRect(renderer, pgons[hl_pgon].getPoint(i).getX(), pgons[hl_pgon].getPoint(i).getY());
         }
 

@@ -5,20 +5,20 @@ namespace grynca {
 
     class Interval {
     public:
-        Interval(float min = 0.0f, float max = 0.0f);
+        Interval(f32 min = 0.0f, f32 max = 0.0f);
 
-        float getMin()const;
-        float getMax()const;
-        void setMin(float m);
-        void setMax(float m);
+        f32 getMin()const;
+        f32 getMax()const;
+        void setMin(f32 m);
+        void setMax(f32 m);
 
         bool overlaps(const Interval& i);
-        bool overlaps(const Interval& i, float& penetration);
+        bool overlaps(const Interval& i, f32& penetration);
         bool contains(const Interval& i);
 
     private:
-        float min_;
-        float max_;
+        f32 min_;
+        f32 max_;
     };
 }
 

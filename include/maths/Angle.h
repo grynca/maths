@@ -1,6 +1,7 @@
 #ifndef ANGLE_H
 #define ANGLE_H
 #include <iostream>
+#include "functions/defs.h"
 
 namespace grynca {
 
@@ -10,11 +11,11 @@ namespace grynca {
     class Angle {
         friend std::ostream& operator<<(std::ostream& os, const Angle& a);
         friend Angle operator+(const Angle& lhs, const Angle& rhs);
-        friend Angle operator+(const Angle& lhs, float s);
+        friend Angle operator+(const Angle& lhs, f32 s);
         friend Angle operator-(const Angle& lhs, const Angle& rhs);
-        friend Angle operator-(const Angle& lhs, float s);
-        friend Angle operator*(const Angle& lhs, float s);
-        friend Angle operator/(const Angle& lhs, float s);
+        friend Angle operator-(const Angle& lhs, f32 s);
+        friend Angle operator*(const Angle& lhs, f32 s);
+        friend Angle operator/(const Angle& lhs, f32 s);
         friend bool operator==(const Angle& lhs, const Angle& rhs);
         friend bool operator!=(const Angle& lhs, const Angle& rhs);
         friend bool operator<=(const Angle& lhs, const Angle& rhs);
@@ -22,42 +23,43 @@ namespace grynca {
         friend bool operator<(const Angle& lhs, const Angle& rhs);
         friend bool operator>(const Angle& lhs, const Angle& rhs);
     public:
-        static constexpr float Pi = 3.1415927410125732421875f;
+        static constexpr f32 Pi = 3.1415927410125732421875f;
+        static constexpr f32 Pi_2 = Pi*0.5f;
 
-        Angle(float rads =0.0f);
+        Angle(f32 rads =0.0f);
 
-        float getRads()const;
-        float getDegs()const;
-        void setRads(float rads);
-        void setDegs(float degs);
+        f32 getRads()const;
+        f32 getDegs()const;
+        void setRads(f32 rads);
+        void setDegs(f32 degs);
 
-        float getSin()const;
-        float getCos()const;
-        void getSinCos(float& sin_out, float& cos_out);
+        f32 getSin()const;
+        f32 getCos()const;
+        void getSinCos(f32& sin_out, f32& cos_out);
 
         Vec2 getDirVec()const;
 
-        Angle& operator+=(float s);
+        Angle& operator+=(f32 s);
         Angle& operator+=(const Angle& v);
-        Angle& operator-=(float s);
+        Angle& operator-=(f32 s);
         Angle& operator-=(const Angle& v);
-        Angle& operator*=(float s);
-        Angle& operator/=(float s);
+        Angle& operator*=(f32 s);
+        Angle& operator/=(f32 s);
         Angle operator-()const;
 
         struct Internal {
-            static float mod_Pi_(float x);      // wraps angle to (-Pi, Pi)
+            static f32 mod_Pi_(f32 x);      // wraps angle to (-Pi, Pi)
 
             // input must be in (-Pi, Pi) interval
             // approximation with parabolas
             //http://forum.devmaster.net/t/fast-and-accurate-sine-cosine/9648
-            static float sin_fast_(float x);
-            static float sin_fast2_(float x);
-            static float cos_fast_(float x);
-            static float cos_from_sin_(float sinr, float x);
+            static f32 sin_fast_(f32 x);
+            static f32 sin_fast2_(f32 x);
+            static f32 cos_fast_(f32 x);
+            static f32 cos_from_sin_(f32 sinr, f32 x);
         };
     private:
-        float rads_;
+        f32 rads_;
     };
 
 }

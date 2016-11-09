@@ -11,15 +11,15 @@ namespace grynca {
         return dir_out_;
     }
 
-    inline float OverlapInfo::getDepth()const{
+    inline f32 OverlapInfo::getDepth()const{
         return depth_;
     }
 
-    inline uint32_t OverlapInfo::getIntersectionsCount()const{
+    inline u32 OverlapInfo::getIntersectionsCount()const{
         return intersections_count_;
     }
 
-    inline const Vec2& OverlapInfo::getIntersection(uint32_t id)const{
+    inline const Vec2& OverlapInfo::getIntersection(u32 id)const{
         ASSERT_M(id < intersections_count_, "Intersection point not defined.");
         return intersections_[id];
     }
@@ -29,7 +29,7 @@ namespace grynca {
         intersections_[intersections_count_++] = ip;
     }
 
-    inline void OverlapInfo::setDepth(float d) {
+    inline void OverlapInfo::setDepth(f32 d) {
         depth_ = d;
     }
 

@@ -7,7 +7,7 @@
 
 namespace grynca {
 
-    inline Circle::Circle(const Vec2& center, float radius)
+    inline Circle::Circle(const Vec2& center, f32 radius)
      : c_(center), r_(radius)
     {}
 
@@ -15,7 +15,7 @@ namespace grynca {
         c_ = c;
     }
 
-    inline void Circle::setRadius(float r) {
+    inline void Circle::setRadius(f32 r) {
         r_ = r;
     }
 
@@ -23,12 +23,12 @@ namespace grynca {
         return c_;
     }
 
-    inline float Circle::getRadius()const {
+    inline f32 Circle::getRadius()const {
         return r_;
     }
 
     inline ARect Circle::calcARectBound()const {
-        float d = r_*2;
+        f32 d = r_*2;
         return {c_-Vec2(r_, r_), Vec2(d, d)};
     }
 
@@ -43,19 +43,19 @@ namespace grynca {
     }
 
     inline bool Circle::overlaps(const Circle& c)const {
-        float radsum_sqr = getRadius()+c.getRadius();
+        f32 radsum_sqr = getRadius()+c.getRadius();
         radsum_sqr *= radsum_sqr;
         return (getCenter() - c.getCenter()).getSqrLen() < radsum_sqr;
     }
 
     inline bool Circle::overlaps(const Circle& c, OverlapInfo& oi)const {
         Vec2 dv = getCenter()-c.getCenter();
-        float cc = dv.getSqrLen();
-        float radsum_sqr = getRadius()+c.getRadius();
+        f32 cc = dv.getSqrLen();
+        f32 radsum_sqr = getRadius()+c.getRadius();
         radsum_sqr *= radsum_sqr;
         if (cc > radsum_sqr)
             return false;
-        float d = sqrt(cc);
+        f32 d = sqrt(cc);
         // must check if circles are on different positions (for avoiding division by zero)
         if (d!=0) {
             oi.depth_ = (getRadius()+c.getRadius()) - d;
@@ -107,10 +107,10 @@ namespace grynca {
         Vec2 bc = r.getCenter()+v;
 
         Vec2 dv = getCenter()-bc;
-        float cr = dv.getSqrLen();
+        f32 cr = dv.getSqrLen();
         if (cr > (getRadius()*getRadius()))
             return false;
-        float d = sqrt(cr);
+        f32 d = sqrt(cr);
         if (d!=0) {
             oi.depth_ = getRadius() - d;
             oi.dir_out_ = dv/d;

@@ -11,14 +11,14 @@ int main() {
     Angle a;
 
     std::cout << "sin= ";
-    for (uint32_t i=0; i<=10; ++i) {
-        float rads = Angle::Pi/2 *((float)i/10);
+    for (u32 i=0; i<=10; ++i) {
+        f32 rads = Angle::Pi/2 *((f32)i/10);
         if (i!=0) std::cout << ", ";
         std::cout << std::setprecision(3) << Angle(rads).getSin();
     }
     std::cout << std::endl << "cos= ";
-    for (uint32_t i=0; i<=10; ++i) {
-        float rads = Angle::Pi/2 *((float)i/10);
+    for (u32 i=0; i<=10; ++i) {
+        f32 rads = Angle::Pi/2 *((f32)i/10);
         if (i!=0) std::cout << ", ";
         std::cout << std::setprecision(3) << Angle(rads).getCos();
     }
@@ -61,7 +61,7 @@ int main() {
         std::cout << "overlap: " << std::endl;
         std::cout << "dirOut=" << oi.getDirOut() << ", depth= " << oi.getDepth() << std::endl;
         std::cout << "intersections: " << std::endl;
-        for (uint32_t i=0; i<oi.getIntersectionsCount(); ++i) {
+        for (u32 i=0; i<oi.getIntersectionsCount(); ++i) {
             std::cout << " " << oi.getIntersection(i) << std::endl;
         }
     }

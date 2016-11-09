@@ -30,8 +30,8 @@ namespace grynca {
         const Vec2& getSize()const;
         const Vec2& getOffset()const;
         const Angle& getRotation()const;
-        float getSinr()const;
-        float getCosr()const;
+        f32 getSinr()const;
+        f32 getCosr()const;
 
         bool isZero();
 
@@ -64,7 +64,7 @@ namespace grynca {
         Vec2 size_;
         Vec2 offset_;  // vector offsetting rotation center (from left-top)
         Angle rotation_;
-        float sinr_, cosr_; // stored sinus and cosinus of rotation
+        f32 sinr_, cosr_; // stored sinus and cosinus of rotation
     };
 }
 

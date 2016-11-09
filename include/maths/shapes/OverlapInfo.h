@@ -11,22 +11,22 @@ namespace grynca {
         friend class ARect;
         friend class Rect;
     public:
-        static constexpr uint32_t MAX_INTERSECTIONS = 8;
+        static constexpr u32 MAX_INTERSECTIONS = 8;
 
         OverlapInfo();
 
         const Vec2& getDirOut()const;
-        float getDepth()const;
-        uint32_t getIntersectionsCount()const;
-        const Vec2& getIntersection(uint32_t id)const;
-        void setDepth(float d);
+        f32 getDepth()const;
+        u32 getIntersectionsCount()const;
+        const Vec2& getIntersection(u32 id)const;
+        void setDepth(f32 d);
         void setDirOut(const Vec2& d);
     private:
         void addIntersection_(const Vec2& ip);
 
         Vec2 dir_out_;
-        float depth_;
-        uint32_t intersections_count_;
+        f32 depth_;
+        u32 intersections_count_;
         Vec2 intersections_[MAX_INTERSECTIONS];
     };
 

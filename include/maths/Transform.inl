@@ -2,7 +2,7 @@
 
 namespace grynca {
     inline Transform::Transform(const Vec2& position, const Angle& rotation, const Vec2& scale)
-     : position_(position), rotation_(rotation), scale_(scale)
+     : position_(position), scale_(scale), rotation_(rotation)
     {
         rotation_.getSinCos(sin_r_, cos_r_);
     }
@@ -32,11 +32,11 @@ namespace grynca {
         return rotation_;
     }
 
-    inline float Transform::getRotSin()const {
+    inline f32 Transform::getRotSin()const {
         return sin_r_;
     }
 
-    inline float Transform::getRotCos()const {
+    inline f32 Transform::getRotCos()const {
         return cos_r_;
     }
 

@@ -18,8 +18,8 @@ namespace grynca {
         const Vec2& getPosition()const;
         const Vec2& getScale()const;
         const Angle& getRotation()const;
-        float getRotSin()const;
-        float getRotCos()const;
+        f32 getRotSin()const;
+        f32 getRotCos()const;
 
         Vec2& accPosition();
         Vec2& accScale();
@@ -36,7 +36,7 @@ namespace grynca {
         Vec2 position_;
         Vec2 scale_;
         Angle rotation_;
-        float sin_r_, cos_r_;   // stored sin/cos
+        f32 sin_r_, cos_r_;   // stored sin/cos
     };
 
 }
