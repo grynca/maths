@@ -1,6 +1,6 @@
 #ifndef MATHS_H
 #define MATHS_H
-
+#include "maths/common.h"
 #include "maths/Angle.h"
 #include "maths/Vec2.h"
 #include "maths/Mat3.h"

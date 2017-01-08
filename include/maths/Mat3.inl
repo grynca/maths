@@ -75,12 +75,12 @@ namespace grynca {
         return Mat3(glm::inverse(m.getInternal()));
     }
 
-    inline f32& Mat3::val(size_t row, size_t col) {
-        return m_[row][col];
+    inline f32& Mat3::val(size_t col, size_t row) {
+        return m_[col][row];
     }
 
-    inline f32 Mat3::val(size_t row, size_t col)const {
-        return m_[row][col];
+    inline f32 Mat3::val(size_t col, size_t row)const {
+        return m_[col][row];
     }
 
     inline Mat3& Mat3::operator*=(const Mat3& m) {

@@ -1,4 +1,5 @@
 #include "Vec2.h"
+#include "maths/common.h"
 #include "Angle.h"
 #include "Interval.h"
 #include "Mat3.h"
@@ -72,6 +73,11 @@ namespace grynca {
         v_.y = y;
     }
 
+    inline void Vec2::set(f32 x, f32 y) {
+        v_.x = x;
+        v_.y = y;
+    }
+
     inline f32& Vec2::accX() {
         return v_.x;
     }
@@ -98,6 +104,10 @@ namespace grynca {
 
     inline bool Vec2::isZero()const {
         return v_.x == 0 && v_.y == 0;
+    }
+
+    inline f32 Vec2::calcRatio()const {
+        return v_.x/v_.y;
     }
 
     inline Interval Vec2::projectPoints(Vec2* points, size_t n_points)const {
@@ -164,6 +174,12 @@ namespace grynca {
         return {vh.x, vh.y};
     }
 
+    inline Dir2 operator*(const Mat3& t, const Dir2& v) {
+        glm::vec3 vh(v.v_, 0.0f);
+        vh = t.m_*vh;
+        return {vh.x, vh.y};
+    }
+
     inline Vec2 operator*(const Vec2& v1, const Vec2& v2) {
         return {v1.v_*v2.v_};
     }
@@ -205,8 +221,8 @@ namespace grynca {
         return glm::dot(v1.v_, v2.v_);
     }
 
-    inline bool isOnSegment(const Vec2& p, const Vec2& start, const Vec2& end, f32 eps) {
-        if (!isOnLine(p, start, end, eps))
+    inline bool isOnSegment(const Vec2& p, const Vec2& start, const Vec2& end) {
+        if (!isOnLine(p, start, end))
             return false;
 
         f32 dx = end.getX()-start.getX();
@@ -219,18 +235,18 @@ namespace grynca {
     }
 
 
-    inline bool isOnLine(const Vec2& p, const Vec2& start, const Vec2& end, f32 eps) {
-        return fabsf(cross(p-start, end-start)) <= eps;
+    inline bool isOnLine(const Vec2& p, const Vec2& start, const Vec2& end) {
+        return fabsf(cross(p-start, end-start)) <= maths::EPS;
     }
 
-    inline bool isRightFromLine(const Vec2& p, const Vec2& start, const Vec2& end, f32 eps) {
+    inline bool isRightFromLine(const Vec2& p, const Vec2& start, const Vec2& end) {
         f32 c = cross(p-start, end-start);
-        return c<=-eps;
+        return c<=-maths::EPS;
     }
 
-    inline bool isLeftFromLine(const Vec2& p, const Vec2& start, const Vec2& end, f32 eps) {
+    inline bool isLeftFromLine(const Vec2& p, const Vec2& start, const Vec2& end) {
         f32 c = cross(p-start, end-start);
-        return c>=eps;
+        return c>=maths::EPS;
     }
 
     inline Vec2 normalize(const Vec2& v) {

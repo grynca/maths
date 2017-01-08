@@ -8,8 +8,15 @@
 namespace grynca {
 
     class Transform {
+
+        friend Transform operator*(const Transform& t1, const Transform& t2);
+        friend Transform operator/(const Transform& t1, const Transform& t2);
+        friend bool operator==(const Transform& t1, const Transform& t2);
+        friend bool operator!=(const Transform& t1, const Transform& t2);
+        friend std::ostream& operator<<(std::ostream& os, const Transform& t);
     public:
         Transform(const Vec2& position = {0,0}, const Angle& rotation = 0, const Vec2& scale = {1, 1});
+        Transform(const Mat3& m);   // extract from matrix
 
         void setPosition(const Vec2& p);
         void setScale(const Vec2& s);
@@ -25,6 +32,9 @@ namespace grynca {
         Vec2& accScale();
         Angle& accRotation();
 
+        Dir2 getRightDir()const;        // get local +X
+        Dir2 getBottomDir()const;       // get local +Y
+
         Mat3 calcMatrix()const;
 
         void move(const Vec2& m);
@@ -32,7 +42,13 @@ namespace grynca {
         void rotate(const Angle& r);
         void scale(const Vec2& s);
 
+        Transform& operator*=(const Transform& t);
+        Transform& operator/=(const Transform& t);
+        Transform operator-()const;
     private:
+        static Angle extractRotation_(f32 a, f32 b, f32& sin_out, f32& cos_out);
+        static Vec2 extractScale_(f32 a, f32 b, f32 c, f32 d, f32 sin_r, f32 cos_r);
+
         Vec2 position_;
         Vec2 scale_;
         Angle rotation_;

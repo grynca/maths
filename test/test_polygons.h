@@ -2,10 +2,6 @@
 #define TEST_POLYGONS_H
 #ifdef VISUAL_UPDATE
 
-#include "base.h"
-#include "maths.h"
-using namespace grynca;
-
 #include "SDL2/SDL.h"
 #define WIDTH 1024
 #define HEIGHT 768
@@ -30,8 +26,11 @@ static inline void drawSmallRect(SDL_Renderer *r, f32 x, f32 y) {
 
 static inline void startPolygonsLoop() {
     srand(time(NULL));
-    SDL_Window *win = SDL_CreateWindow("SAP Updating", 100, 100, WIDTH, HEIGHT, 0);
+    SDL_Window *win = SDL_CreateWindow("Polygons playground", 100, 100, WIDTH, HEIGHT, 0);
     SDL_Renderer *renderer = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
+
+    // set vsync
+    SDL_GL_SetSwapInterval(1);
 
     // main loop
     bool exit = false;
@@ -40,7 +39,6 @@ static inline void startPolygonsLoop() {
     u32 hl_pgon = 0;
     u32 hl_pid = 0;
     u32 frame_id = 0;
-    grynca::Measure m("update");
 
     fast_vector<Pgon> pgons;
     PgonModifier mod(pgons);
@@ -50,16 +48,17 @@ static inline void startPolygonsLoop() {
         pgons[0].addPoint(v);
     }
 
-    std::function<void()> main_loop = [&]() {
-        m.incCounter();
-#ifdef CONSTANT_DT
-        f32 dt = CONSTANT_DT;
-#else
-        f32 dt = m.calcDt();
-#endif
+    std::cout << "Controls: number keys: change preconstructed polygon" << std::endl
+              << "          g: generate new polygon" << std::endl
+              << "          s: split polygon to simple polygons" << std::endl
+              << "          c: toggle clockwise/counter clockwise" << std::endl
+              << "          h: polygon halving" << std::endl
+              << "          d: decompose to convex polygons" << std::endl;
 
+    std::function<void()> main_loop = [&]() {
         SDL_Event evt;
-        if ( SDL_PollEvent(&evt) ) {
+
+        while ( SDL_PollEvent(&evt) ) {
             switch (evt.type) {
                 case (SDL_QUIT): {
                     exit = true;
@@ -83,6 +82,14 @@ static inline void startPolygonsLoop() {
                             hl_pid = 0;
                         }break;
                         case (SDLK_d): {
+                            if (!pgons[hl_pgon].isSimple()) {
+                                std::cout << "polygon must be simple." << std::endl;
+                                break;
+                            }
+                            if (!pgons[hl_pgon].isClockwise()) {
+                                std::cout << "polygon must be clockwise." << std::endl;
+                                break;
+                            }
                             BlockMeasure m("polygon decompose to convex.");
                             u32 prev_size = pgons.size();
                             mod.convexize(hl_pgon);
@@ -90,6 +97,10 @@ static inline void startPolygonsLoop() {
                             hl_pid = 0;
                         }break;
                         case (SDLK_h): {
+                            if (!pgons[hl_pgon].isClockwise()) {
+                                std::cout << "polygon must be clockwise." << std::endl;
+                                break;
+                            }
                             BlockMeasure m("polygon halving.");
                             mod.half(hl_pgon);
                             std::cout << " Created " << 1 << " new polygons. " << std::endl;
@@ -240,9 +251,9 @@ static inline void startPolygonsLoop() {
         SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
         drawSmallRect(renderer, pgons[hl_pgon].getPoint(hl_pid).getX(), pgons[hl_pgon].getPoint(hl_pid).getY());
 
-        Vec2& sp = pgons[hl_pgon].getPoint(hl_pid);
-        Vec2& p1 = pgons[hl_pgon].getPoint(wrap(hl_pid-1, pgons[hl_pgon].getSize()));
-        Vec2& p2 = pgons[hl_pgon].getPoint(wrap(hl_pid+1, pgons[hl_pgon].getSize()));
+//        Vec2& sp = pgons[hl_pgon].getPoint(hl_pid);
+//        Vec2& p1 = pgons[hl_pgon].getPoint(wrap(hl_pid-1, pgons[hl_pgon].getSize()));
+//        Vec2& p2 = pgons[hl_pgon].getPoint(wrap(hl_pid+1, pgons[hl_pgon].getSize()));
 
         SDL_RenderPresent(renderer);
         ++frame_id;

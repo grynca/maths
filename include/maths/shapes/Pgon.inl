@@ -138,7 +138,7 @@ namespace grynca {
         //      http://geomalgorithms.com/a09-_intersect-3.html
 
         u32 psize = points_.size();
-        Ray edges[psize];
+        fast_vector<Ray> edges(psize);
         for (u32 i=0; i<psize-1; ++i) {
             edges[i] = Ray(points_[i], points_[i+1]);
         }
@@ -245,7 +245,7 @@ namespace grynca {
 
         u32 half_id = pgon.getSize()/2;
 
-        pgons_->push_back();
+        pgons_->emplace_back();
         Pgon& new_pgon = pgons_->back();
         Pgon& old_pgon = (*pgons_)[pos];
 
@@ -281,7 +281,7 @@ namespace grynca {
     }
 
     inline void PgonModifier::splitEdge_(u32 pos, const Vec2& split_point, fast_vector<Ray>& edges_io, u32 edge1_id, u32 edge2_id) {
-        pgons_->push_back();
+        pgons_->emplace_back();
         Pgon& new_pgon = pgons_->back();
         Pgon& old_pgon = (*pgons_)[pos];
 
@@ -318,28 +318,9 @@ namespace grynca {
         // last vertex
         checkIntersectionCandidate_(pgon, v, IdTriplet{s-2, s-1, 0}, lower, upper);
 
-        if (lower.v_id == (upper.v_id+1)%s) {
-            // no vertices to connect to, create steiner vertex in the middle
-            Vec2 steiner_pt((lower.int_point+upper.int_point)/2);
-
-            pgons_->push_back();
-            Pgon& new_pgon = pgons_->back();
-            Pgon& old_pgon = (*pgons_)[pos];
-
-            if (v.id < lower.v_id) {
-                new_pgon.points_.insert(new_pgon.points_.end(), old_pgon.points_.begin()+v.id, old_pgon.points_.begin()+lower.v_id);
-                new_pgon.points_.push_back(steiner_pt);
-                old_pgon.points_.erase(old_pgon.points_.begin()+v.id+1, old_pgon.points_.begin()+lower.v_id);
-                old_pgon.points_.insert(old_pgon.points_.begin()+v.id+1, steiner_pt);
-            }
-            else {
-                new_pgon.points_.push_back(steiner_pt);
-                new_pgon.points_.insert(new_pgon.points_.end(), old_pgon.points_.begin()+lower.v_id, old_pgon.points_.begin()+v.id+1);
-                old_pgon.points_.erase(old_pgon.points_.begin()+lower.v_id, old_pgon.points_.begin()+v.id);
-                old_pgon.points_.insert(old_pgon.points_.begin()+lower.v_id, steiner_pt);
-            }
-        }
-        else {
+        // no vertices to connect to, create steiner vertex in the middle
+        bool create_point = (lower.v_id == (upper.v_id+1)%s);
+        if (!create_point) {
             // connect to the closest point within the triangle
             u32 n = pgon.getSize();
             if (lower.v_id > upper.v_id) {
@@ -356,7 +337,7 @@ namespace grynca {
             indirectSort(dists_.begin(), dists_.end(), dists_order_, std::less<f32>());
 
             u32 i;
-            u32 best_pt_id;
+            u32 best_pt_id = InvalidId();
             for (i=0; i<dists_order_.size(); ++i) {
                 best_pt_id = (dists_order_[i]+lower.v_id)%n;
                 Vec2& pt = pgon.getPoint(best_pt_id);
@@ -366,38 +347,56 @@ namespace grynca {
                 if (!in_triangle)
                     continue;
 
-                if (v.id<best_pt_id) {
-                    if (checkIfCrossed(pgon, v.id, best_pt_id)) {
-                        continue;
-                    }
-                }
-                else {
-                    if (checkIfCrossed(pgon, best_pt_id, v.id)) {
-                        continue;
-                    }
-                }
+                if (checkIfCrossed(pgon, v.id, best_pt_id))
+                    continue;
+
                 // good point
                 break;
             }
 
-            ASSERT(i!=dists_order_.size() && "Suitable point not found.");
+            bool point_found = (i!=dists_order_.size());
+            if (point_found) {
+                pgons_->emplace_back();
+                Pgon& new_pgon = pgons_->back();
+                Pgon& old_pgon = (*pgons_)[pos];
 
-            pgons_->push_back();
+                if (v.id<best_pt_id) {
+                    new_pgon.points_.insert(new_pgon.points_.end(), old_pgon.points_.begin()+v.id, old_pgon.points_.begin()+best_pt_id+1);
+                    old_pgon.points_.erase(old_pgon.points_.begin()+v.id+1, old_pgon.points_.begin()+best_pt_id);
+                }
+                else {
+                    new_pgon.points_.insert(new_pgon.points_.end(), old_pgon.points_.begin()+best_pt_id, old_pgon.points_.begin()+v.id+1);
+                    old_pgon.points_.erase(old_pgon.points_.begin()+best_pt_id+1, old_pgon.points_.begin()+v.id);
+                }
+            }
+            else {
+                create_point = true;
+            }
+        }
+
+        if (create_point) {
+            Vec2 steiner_pt((lower.int_point+upper.int_point)/2);
+
+            pgons_->emplace_back();
             Pgon& new_pgon = pgons_->back();
             Pgon& old_pgon = (*pgons_)[pos];
 
-            if (v.id<best_pt_id) {
-                new_pgon.points_.insert(new_pgon.points_.end(), old_pgon.points_.begin()+v.id, old_pgon.points_.begin()+best_pt_id+1);
-                old_pgon.points_.erase(old_pgon.points_.begin()+v.id+1, old_pgon.points_.begin()+best_pt_id);
+            if (v.id < lower.v_id) {
+                new_pgon.points_.insert(new_pgon.points_.end(), old_pgon.points_.begin()+v.id, old_pgon.points_.begin()+lower.v_id);
+                new_pgon.points_.push_back(steiner_pt);
+                old_pgon.points_.erase(old_pgon.points_.begin()+v.id+1, old_pgon.points_.begin()+lower.v_id);
+                old_pgon.points_.insert(old_pgon.points_.begin()+v.id+1, steiner_pt);
             }
             else {
-                new_pgon.points_.insert(new_pgon.points_.end(), old_pgon.points_.begin()+best_pt_id, old_pgon.points_.begin()+v.id+1);
-                old_pgon.points_.erase(old_pgon.points_.begin()+best_pt_id+1, old_pgon.points_.begin()+v.id);
+                new_pgon.points_.push_back(steiner_pt);
+                new_pgon.points_.insert(new_pgon.points_.end(), old_pgon.points_.begin()+lower.v_id, old_pgon.points_.begin()+v.id+1);
+                old_pgon.points_.erase(old_pgon.points_.begin()+lower.v_id, old_pgon.points_.begin()+v.id);
+                old_pgon.points_.insert(old_pgon.points_.begin()+lower.v_id, steiner_pt);
             }
         }
 
         // split smallest first
-        u32 last_id = pgons_->size()-1;
+        u32 last_id = u32(pgons_->size())-1;
         if ((*pgons_)[pos].getSize() < (*pgons_)[last_id].getSize()) {
             convexize(pos);
             convexize(last_id);
@@ -444,12 +443,25 @@ namespace grynca {
     }
 
     inline bool PgonModifier::checkIfCrossed(Pgon& pgon, u32 v_id, u32 target_id) {
-        Vec2& v = pgon.getPoint(v_id);
-        Vec2& t = pgon.getPoint(target_id);
+        u32 p1_id = v_id, p2_id = target_id;
+        if (v_id > target_id) {
+            p1_id = target_id;
+            p2_id = v_id;
+        }
 
-        for (u32 j=v_id; j<target_id; ++j) {
-            Vec2& pt = pgon.getPoint(j);
-            if (isRightFromLine(pt, v, t)) {
+        Vec2& p1 = pgon.getPoint(p1_id);
+        Vec2& p2 = pgon.getPoint(p2_id);
+
+        for (u32 i=p1_id+1; i<p2_id; ++i) {
+            Vec2& pt = pgon.getPoint(i);
+            if (isRightFromLine(pt, p1, p2)) {
+                return true;
+            }
+        }
+        u32 ps = pgon.getSize();
+        for (u32 i = (p2_id+1)%ps; i!= p1_id; i=(i+1)%ps) {
+            Vec2& pt = pgon.getPoint(i);
+            if (isRightFromLine(pt, p2, p1)) {
                 return true;
             }
         }

@@ -1,16 +1,18 @@
 #ifndef MAT3_H
 #define MAT3_H
 
-#include <glm/glm.hpp>
+#include "glm_incl.h"
 
 namespace grynca {
     // fw
     class Angle;
     class Vec2;
+    class Dir2;
 
     // Col-major matrix
     class Mat3 {
         friend Vec2 operator*(const Mat3& t, const Vec2& v);
+        friend Dir2 operator*(const Mat3& t, const Dir2& v);
         friend Mat3 operator*(const Mat3& t, const Mat3& m);
         friend bool operator==(const Mat3& m1, const Mat3& m2);
         friend bool operator!=(const Mat3& m1, const Mat3& m2);
@@ -32,8 +34,8 @@ namespace grynca {
         static Mat3 createProjectionIverse2D(const Vec2& viewport_size);
         static Mat3 invert(const Mat3& m);
 
-        f32& val(size_t row, size_t col);
-        f32 val(size_t row, size_t col)const;
+        f32& val(size_t col, size_t row);
+        f32 val(size_t col, size_t row)const;
 
         Mat3& operator*=(const Mat3& m);
 

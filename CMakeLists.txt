@@ -15,7 +15,7 @@ IF (CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
     ENDIF()
 ENDIF()
 
-option(VISUAL_UPDATE "Visual Updating" OFF)
+option(VISUAL_UPDATE "Visual Updating" ON)
 
 IF (VISUAL_UPDATE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DVISUAL_UPDATE" )
@@ -23,25 +23,27 @@ ENDIF()
 
 include_directories(include/)
 IF(WIN32)
-    include_directories(c:/DEV/gamedev/base/src/)
+    include_directories(c:/DEV/gamedev/base/include/)
     include_directories(c:/DEV/libs/mingw/glm/)
 
     IF (VISUAL_UPDATE)
         include_directories(c:/DEV/gamedev/assets/include/)
-        include_directories(c:/DEV/libs/mingw/SDL2-2.0.4/x86/include/)
-        link_directories(c:/DEV/libs/mingw/SDL2-2.0.4/x86/lib)
+        include_directories(c:/DEV/libs/mingw/SDL2-2.0.5/x86/include/)
+        link_directories(c:/DEV/libs/mingw/SDL2-2.0.5/x86/lib)
         include_directories(c:/DEV/libs/mingw/glew-1.13.0/include/)
         link_directories(c:/DEV/libs/mingw/glew-1.13.0/lib/)
 
         set(LIBS "-lglew32 -lglu32 -lopengl32 -lmingw32 -lSDL2main -lSDL2 -lSDL2_image")
     ENDIF()
 ELSE()
-   include_directories(/home/grynca/DEV/gamedev/base/src/)
+   include_directories(/home/grynca/DEV/gamedev/base/include/)
    set(LIBS "-lGLEW -lGL -lGLU -lfreetype -lSDL2 -lSDL2_image")
 ENDIF(WIN32)
 
 set(INC_FILES
+        include/maths/glm_incl.h
         include/maths.h
+        include/maths/common.h
         include/maths/Angle.h
         include/maths/Angle.inl
         include/maths/Vec2.h
@@ -70,10 +72,8 @@ set(INC_FILES
         include/maths/shapes/Pgon.inl
         )
 set(SOURCE_FILES
-        src/main.cpp
-        src/test_gon.h
-        src/test_polygons.h
-        )
+        test/main.cpp
+        test/test_polygons.h)
 
 add_executable(maths ${SOURCE_FILES} ${INC_FILES} )
 target_link_libraries(maths ${LIBS})
