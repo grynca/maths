@@ -13,36 +13,13 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7759f816-a839-422c-9319-22a0cf834deb" name="Default" comment="added Dir2&#10;Transform multiplication, extraction of rotation &amp; scale from Transform&#10;fixed polygons sample, compiled to Emscripten">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/include/maths/shapes/NoShape.h" />
+    <list default="true" id="7759f816-a839-422c-9319-22a0cf834deb" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/Emscripten/main.html.mem" afterPath="$PROJECT_DIR$/build/Emscripten/main.html.mem" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/Emscripten/test.bc" afterPath="$PROJECT_DIR$/build/Emscripten/test.bc" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CMakeLists.txt" afterPath="$PROJECT_DIR$/CMakeLists.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/maths/Angle.h" afterPath="$PROJECT_DIR$/include/maths/Angle.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/maths/Angle.inl" afterPath="$PROJECT_DIR$/include/maths/Angle.inl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/maths/Interval.h" afterPath="$PROJECT_DIR$/include/maths/Interval.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/maths/Interval.inl" afterPath="$PROJECT_DIR$/include/maths/Interval.inl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/maths/Transform.h" afterPath="$PROJECT_DIR$/include/maths/Transform.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/maths/Transform.inl" afterPath="$PROJECT_DIR$/include/maths/Transform.inl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/maths/Vec2.h" afterPath="$PROJECT_DIR$/include/maths/Vec2.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/maths/Vec2.inl" afterPath="$PROJECT_DIR$/include/maths/Vec2.inl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/maths/shapes/ARect.h" afterPath="$PROJECT_DIR$/include/maths/shapes/ARect.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/maths/shapes/ARect.inl" afterPath="$PROJECT_DIR$/include/maths/shapes/ARect.inl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/maths/shapes/Circle.h" afterPath="$PROJECT_DIR$/include/maths/shapes/Circle.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/maths/shapes/Circle.inl" afterPath="$PROJECT_DIR$/include/maths/shapes/Circle.inl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/maths/shapes/OverlapInfo.h" afterPath="$PROJECT_DIR$/include/maths/shapes/OverlapInfo.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/maths/shapes/OverlapInfo.inl" afterPath="$PROJECT_DIR$/include/maths/shapes/OverlapInfo.inl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/maths/shapes/Pgon.h" afterPath="$PROJECT_DIR$/include/maths/shapes/Pgon.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/maths/shapes/Pgon.inl" afterPath="$PROJECT_DIR$/include/maths/shapes/Pgon.inl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/maths/shapes/Ray.h" afterPath="$PROJECT_DIR$/include/maths/shapes/Ray.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/maths/shapes/Ray.inl" afterPath="$PROJECT_DIR$/include/maths/shapes/Ray.inl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/maths/shapes/Rect.h" afterPath="$PROJECT_DIR$/include/maths/shapes/Rect.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/maths/shapes/Rect.inl" afterPath="$PROJECT_DIR$/include/maths/shapes/Rect.inl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/maths/shapes/Shape.h" afterPath="$PROJECT_DIR$/include/maths/shapes/Shape.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/maths/shapes/Shape.inl" afterPath="$PROJECT_DIR$/include/maths/shapes/Shape.inl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/maths/shapes/ShapeTypes.h" afterPath="$PROJECT_DIR$/include/maths/shapes/ShapeTypes.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/maths/shapes/Shape_internal.h" afterPath="$PROJECT_DIR$/include/maths/shapes/Shape_internal.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/main.cpp" afterPath="$PROJECT_DIR$/test/main.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/test_polygons.h" afterPath="$PROJECT_DIR$/test/test_polygons.h" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/Emscripten/main.html" afterPath="$PROJECT_DIR$/build/Emscripten/main.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/Emscripten/main.js" afterPath="$PROJECT_DIR$/build/Emscripten/main.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/emscripten_build.sh" afterPath="$PROJECT_DIR$/emscripten_build.sh" />
     </list>
     <ignored path="maths.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -669,7 +646,7 @@
       <workItem from="1486279834859" duration="1665000" />
       <workItem from="1488110645336" duration="640000" />
       <workItem from="1491142476797" duration="734000" />
-      <workItem from="1492327530131" duration="7350000" />
+      <workItem from="1492327530131" duration="7609000" />
     </task>
     <task id="LOCAL-00001" summary="Frame renamed to Transform&#10;+ minor changes">
       <created>1438890531378</created>
@@ -727,11 +704,18 @@
       <option name="project" value="LOCAL" />
       <updated>1483885676469</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="added NoShape - special null type Shape&#10;transform(const Mat3&amp; tr) function for Shapes&#10;test updated for SDLTestBench">
+      <created>1492436179625</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1492436179625</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="220623000" />
+    <option name="totallyTimeSpent" value="220882000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1" y="0" width="1922" height="1080" extended-state="6" />
@@ -782,7 +766,8 @@
     <MESSAGE value="Polygon simplification &amp; decomposition" />
     <MESSAGE value="changes for new typedefs&#10;removed warnings" />
     <MESSAGE value="added Dir2&#10;Transform multiplication, extraction of rotation &amp; scale from Transform&#10;fixed polygons sample, compiled to Emscripten" />
-    <option name="LAST_COMMIT_MESSAGE" value="added Dir2&#10;Transform multiplication, extraction of rotation &amp; scale from Transform&#10;fixed polygons sample, compiled to Emscripten" />
+    <MESSAGE value="added NoShape - special null type Shape&#10;transform(const Mat3&amp; tr) function for Shapes&#10;test updated for SDLTestBench" />
+    <option name="LAST_COMMIT_MESSAGE" value="added NoShape - special null type Shape&#10;transform(const Mat3&amp; tr) function for Shapes&#10;test updated for SDLTestBench" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
