@@ -37,6 +37,7 @@ namespace grynca {
     public:
         Vec2();
         Vec2(f32 x, f32 y);
+        Vec2(const Vec2& v);
 
         // When in (+Ydown, +Xright coords. frame) positive rotation is clockwise
         Vec2 rotate(const Angle& a)const;
@@ -85,6 +86,7 @@ namespace grynca {
     class Dir2 : public Vec2 {
     public:
         Dir2() : Vec2() {}
+        Dir2(const Vec2& v) : Vec2(v) {}
         Dir2(f32 x, f32 y) : Vec2(x, y) {}
     };
 }

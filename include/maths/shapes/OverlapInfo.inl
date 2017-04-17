@@ -7,7 +7,7 @@ namespace grynca {
      : depth_(0), intersections_count_(0)
     {}
 
-    inline const Vec2& OverlapInfo::getDirOut()const{
+    inline const Dir2& OverlapInfo::getDirOut()const{
         return dir_out_;
     }
 
@@ -33,8 +33,12 @@ namespace grynca {
         depth_ = d;
     }
 
-    inline void OverlapInfo::setDirOut(const Vec2& d) {
+    inline void OverlapInfo::setDirOut(const Dir2& d) {
         dir_out_ = d;
+    }
+
+    inline Vec2 OverlapInfo::getVecOut() {
+        return dir_out_*depth_;
     }
 
 }

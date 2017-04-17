@@ -11,6 +11,8 @@ namespace grynca {
 
         friend Transform operator*(const Transform& t1, const Transform& t2);
         friend Transform operator/(const Transform& t1, const Transform& t2);
+        friend Transform operator*(const Transform& t, f32 num);
+        friend Transform operator-(const Transform& t1, const Transform& t2);   //calculates delta between transforms
         friend bool operator==(const Transform& t1, const Transform& t2);
         friend bool operator!=(const Transform& t1, const Transform& t2);
         friend std::ostream& operator<<(std::ostream& os, const Transform& t);

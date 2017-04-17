@@ -5,7 +5,7 @@
 
 namespace grynca {
 
-    inline Angle::Angle(f32 rads)
+    inline constexpr Angle::Angle(f32 rads)
      : rads_(rads)
     {
     }
@@ -13,6 +13,11 @@ namespace grynca {
     inline Angle Angle::random() {
         // static
         return f32(rand()%3600)*Pi/1800.0f;
+    }
+
+    inline constexpr Angle Angle::degrees(f32 degs) {
+        // static
+        return Angle(degs *Angle::Pi/180.f);
     }
 
     inline f32 Angle::getRads()const {
@@ -38,7 +43,7 @@ namespace grynca {
         return cosf(rads_);
     }
 
-    inline void Angle::getSinCos(f32& sin_out, f32& cos_out) {
+    inline void Angle::getSinCos(f32& sin_out, f32& cos_out)const {
 #ifdef _WIN32
         sin_out = sinf(rads_);
         cos_out = cos_from_sin_(sin_out, rads_);
@@ -48,15 +53,24 @@ namespace grynca {
     }
 
     inline Dir2 Angle::getDir()const {
-        f32 sin = getSin();
-        f32 cos = cos_from_sin_(sin, rads_);
+        f32 sin;
+        f32 cos;
+        getSinCos(sin, cos);
         return {cos, sin};
     }
 
-    inline void Angle::normalize() {
+    inline Angle& Angle::normalize() {
         f32 x1 = rads_ * (1.0f / Pi);
         int whole_Pis = (int)x1;
         rads_ = Pi * (x1 - whole_Pis - (whole_Pis%2));
+        return *this;
+    }
+
+    inline Angle Angle::normalize()const {
+        f32 x1 = rads_ * (1.0f / Pi);
+        int whole_Pis = (int)x1;
+        f32 rads = Pi * (x1 - whole_Pis - (whole_Pis%2));
+        return Angle(rads);
     }
 
     inline Angle& Angle::operator+=(f32 s) {
@@ -70,12 +84,12 @@ namespace grynca {
     }
 
     inline Angle& Angle::operator-=(f32 s) {
-        setRads(rads_-s);
+        setRads(rads_ - s);
         return *this;
     }
 
     inline Angle& Angle::operator-=(const Angle& v) {
-        setRads(rads_-v.rads_);
+        setRads(rads_ - v.getRads());
         return *this;
     }
 
@@ -116,7 +130,7 @@ namespace grynca {
     }
 
     inline Angle operator-(const Angle& lhs, const Angle& rhs) {
-        return {lhs.rads_-rhs.rads_};
+        return {lhs.getRads() - rhs.getRads()};
     }
 
     inline Angle operator*(const Angle& lhs, f32 s) {
@@ -128,7 +142,7 @@ namespace grynca {
     }
 
     inline Angle operator-(const Angle& lhs, f32 s) {
-        return {lhs.rads_-s};
+        return {lhs.getRads() - s};
     }
 
     inline bool operator==(const Angle& lhs, const Angle& rhs) {

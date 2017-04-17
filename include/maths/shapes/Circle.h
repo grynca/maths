@@ -10,6 +10,7 @@ namespace grynca {
     class ARect;
     class Ray;
     class Pgon;
+    class NoShape;
 
     class Circle {
         friend std::ostream& operator << (std::ostream& os, Circle& c);
@@ -23,6 +24,7 @@ namespace grynca {
         f32 getRadius()const;
 
         ARect calcARectBound()const;
+        void transform(const Mat3& tr);
 
         bool overlaps(const Ray& r)const;
         bool overlaps(const Ray& r, OverlapInfo& oi)const;
@@ -34,6 +36,8 @@ namespace grynca {
         bool overlaps(const Rect& r, OverlapInfo& oi)const;
         bool overlaps(const Pgon& p)const;
         bool overlaps(const Pgon& p, OverlapInfo& oi)const;
+        bool overlaps(const NoShape& p)const { return false; }
+        bool overlaps(const NoShape& p, OverlapInfo& oi)const { return false; }
     private:
         Vec2 c_;
         f32 r_;

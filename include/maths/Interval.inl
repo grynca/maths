@@ -26,7 +26,7 @@ namespace grynca {
         return max_ > i.min_ && min_ < i.max_;
     }
 
-    inline bool Interval::overlaps(const Interval& i, f32& penetration) {
+    inline bool Interval::overlaps(const Interval& i, f32& penetration, f32& dir) {
         f32 p1 = max_ - i.min_;
         if (p1 <= 0)
             return false;
@@ -34,7 +34,14 @@ namespace grynca {
         if (p2 <= 0)
             return false;
 
-        penetration = std::min(p1, p2);
+        if (p2 < p1) {
+            dir = -1.0f;
+            penetration = p2;
+        }
+        else {
+            dir = 1.0f;
+            penetration = p1;
+        }
         return true;
     }
 

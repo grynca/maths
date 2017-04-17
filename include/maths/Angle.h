@@ -28,9 +28,10 @@ namespace grynca {
         static constexpr f32 Pi_2 = Pi*0.5f;
         static constexpr f32 Pi_4 = Pi*0.25f;
 
-        Angle(f32 rads =0.0f);
+        constexpr Angle(f32 rads =0.0f);
 
         static Angle random();
+        static constexpr Angle degrees(f32 degs);
 
         f32 getRads()const;
         f32 getDegs()const;
@@ -39,12 +40,12 @@ namespace grynca {
 
         f32 getSin()const;
         f32 getCos()const;
-        void getSinCos(f32& sin_out, f32& cos_out);
+        void getSinCos(f32& sin_out, f32& cos_out)const;
 
         Dir2 getDir()const;
 
-        void normalize();       // wraps angle to (-Pi, Pi)
-
+        Angle& normalize();
+        Angle normalize()const;
         Angle& operator+=(f32 s);
         Angle& operator+=(const Angle& v);
         Angle& operator-=(f32 s);

@@ -9,10 +9,16 @@ namespace grynca {
     class Circle;
     class ARect;
     class OverlapInfo;
+    class NoShape;
 
     class Pgon {
+        friend std::ostream& operator << (std::ostream& os, Pgon& p);
     public:
+        Pgon() {}
+        Pgon(const Vec2* points, u32 points_cnt);
+
         ARect calcARectBound()const;
+        void transform(const Mat3& tr);
 
         bool overlaps(const Ray& r)const;
         bool overlaps(const Ray& r, OverlapInfo& oi)const;
@@ -24,6 +30,8 @@ namespace grynca {
         bool overlaps(const ARect& r, OverlapInfo& oi)const;
         bool overlaps(const Pgon& p)const;
         bool overlaps(const Pgon& p, OverlapInfo& oi)const;
+        bool overlaps(const NoShape& p)const { return false; }
+        bool overlaps(const NoShape& p, OverlapInfo& oi)const { return false; }
 
         bool isEmpty()const;
         u32 getSize()const;
@@ -75,7 +83,7 @@ namespace grynca {
 
         fast_vector<Pgon>* pgons_;
         fast_vector<f32> dists_;
-        fast_vector<u32> dists_order_;
+        fast_vector<f32*> sorted_dists_;
     };
 
     class PolygonMesh {

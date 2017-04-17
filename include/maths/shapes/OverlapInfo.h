@@ -15,16 +15,17 @@ namespace grynca {
 
         OverlapInfo();
 
-        const Vec2& getDirOut()const;
+        const Dir2& getDirOut()const;
         f32 getDepth()const;
         u32 getIntersectionsCount()const;
         const Vec2& getIntersection(u32 id)const;
         void setDepth(f32 d);
-        void setDirOut(const Vec2& d);
+        void setDirOut(const Dir2& d);
+        Vec2 getVecOut();
     private:
         void addIntersection_(const Vec2& ip);
 
-        Vec2 dir_out_;
+        Dir2 dir_out_;
         f32 depth_;
         u32 intersections_count_;
         Vec2 intersections_[MAX_INTERSECTIONS];

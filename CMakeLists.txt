@@ -15,30 +15,30 @@ IF (CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
     ENDIF()
 ENDIF()
 
-option(VISUAL_UPDATE "Visual Updating" ON)
+IF (WIN32)
+    include_directories(c:/DEV/libs/mingw/glm/)
+    include_directories(c:/DEV/gamedev/base/include/)
+    include_directories(c:/DEV/gamedev/assets/include/)
+ELSE()
+    include_directories(/home/grynca/DEV/gamedev/base/include/)
+    include_directories(/home/grynca/DEV/gamedev/assets/include/)
+ENDIF()
 
-IF (VISUAL_UPDATE)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DVISUAL_UPDATE" )
+option(USE_SDL2 "Use SDL2" ON)
+IF (USE_SDL2)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_SDL2=1" )
+    IF (WIN32)
+        include_directories(c:/DEV/libs/mingw/SDL2-2.0.4/x86/include/)
+        link_directories(c:/DEV/libs/mingw/SDL2-2.0.4/x86/lib)
+        include_directories(c:/DEV/libs/mingw/glew-1.13.0/include/)
+        link_directories(c:/DEV/libs/mingw/glew-1.13.0/lib/)
+        set(LIBS "-lglew32 -lglu32 -lopengl32 -lmingw32 -lSDL2main -lSDL2 -lSDL2_image")
+    ELSE()
+        set(LIBS "-lGLEW -lGL -lGLU -lSDL2 -lSDL2_image")
+    ENDIF()
 ENDIF()
 
 include_directories(include/)
-IF(WIN32)
-    include_directories(c:/DEV/gamedev/base/include/)
-    include_directories(c:/DEV/libs/mingw/glm/)
-
-    IF (VISUAL_UPDATE)
-        include_directories(c:/DEV/gamedev/assets/include/)
-        include_directories(c:/DEV/libs/mingw/SDL2-2.0.5/x86/include/)
-        link_directories(c:/DEV/libs/mingw/SDL2-2.0.5/x86/lib)
-        include_directories(c:/DEV/libs/mingw/glew-1.13.0/include/)
-        link_directories(c:/DEV/libs/mingw/glew-1.13.0/lib/)
-
-        set(LIBS "-lglew32 -lglu32 -lopengl32 -lmingw32 -lSDL2main -lSDL2 -lSDL2_image")
-    ENDIF()
-ELSE()
-   include_directories(/home/grynca/DEV/gamedev/base/include/)
-   set(LIBS "-lGLEW -lGL -lGLU -lfreetype -lSDL2 -lSDL2_image")
-ENDIF(WIN32)
 
 set(INC_FILES
         include/maths/glm_incl.h
@@ -70,7 +70,7 @@ set(INC_FILES
         include/maths/shapes/Ray.inl
         include/maths/shapes/Pgon.h
         include/maths/shapes/Pgon.inl
-        )
+        include/maths/shapes/NoShape.h)
 set(SOURCE_FILES
         test/main.cpp
         test/test_polygons.h)

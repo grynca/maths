@@ -10,6 +10,7 @@ namespace grynca {
     class Rect;
     class Ray;
     class Pgon;
+    class NoShape;
 
     class ARect {
         friend std::ostream& operator<<(std::ostream& os, ARect& ar);
@@ -45,6 +46,7 @@ namespace grynca {
         void expand(const ARect& r);
 
         ARect calcARectBound()const;
+        void transform(const Mat3& tr);      // creates enlarged rect
 
         bool overlaps(const Ray& r)const;
         bool overlaps(const Ray& r, OverlapInfo& oi)const;
@@ -56,6 +58,8 @@ namespace grynca {
         bool overlaps(const Rect& r, OverlapInfo& oi)const;
         bool overlaps(const Pgon& p)const;
         bool overlaps(const Pgon& p, OverlapInfo& oi)const;
+        bool overlaps(const NoShape& p)const { return false; }
+        bool overlaps(const NoShape& p, OverlapInfo& oi)const { return false; }
 
         bool isPointInside(const Vec2& p);
 

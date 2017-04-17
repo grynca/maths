@@ -10,9 +10,13 @@ namespace grynca {
 
     // in-place polymorphic shape type
     class Shape : public Variant<ShapeTypes> {
+        friend std::ostream& operator<<(std::ostream& os, Shape& s);
     public:
         bool overlaps(const Shape& s, OverlapInfo& oi)const;
         bool overlaps(const Shape& s)const;
+
+        // changes shape
+        void transform(const Mat3& tr);
     private:
         internal::ShapeHelper& getHelper_()const;
     };

@@ -14,12 +14,18 @@ namespace grynca {
      : v_(x, y)
     {}
 
+    inline Vec2::Vec2(const Vec2& v)
+     : v_(v.v_)
+    {}
+
     inline Vec2::Vec2(const glm::vec2& v)
      : v_(v)
     {}
 
     inline Vec2 Vec2::rotate(const Angle& a)const {
-        return rotate(a.getSin(), a.getCos());
+        f32 sin, cos;
+        a.getSinCos(sin, cos);
+        return rotate(sin, cos);
     }
 
     inline Vec2 Vec2::rotate(f32 sin_r, f32 cos_r)const {

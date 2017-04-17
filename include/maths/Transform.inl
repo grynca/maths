@@ -1,4 +1,5 @@
 #include "Transform.h"
+#include "common.h"
 
 namespace grynca {
     inline Transform::Transform(const Vec2& position, const Angle& rotation, const Vec2& scale)
@@ -112,14 +113,11 @@ namespace grynca {
         sin_r_ = t.sin_r_*cos_r_ + t.cos_r_*sin_r_;
         cos_r_ = t.cos_r_*cos_r_ - t.sin_r_*sin_r_;
 
-        if (fabsf(sin_r_) < 0.001f) {
-            scale_.accX() = (a2*a1 + b2*c1)/cos_r_;
-            scale_.accY() = (d2*d1 + c2*b1)/cos_r_;
-        }
-        else {
-            scale_.accX() = (a2*b1 + b2*d1)/sin_r_;
-            scale_.accY() = (c2*a1 + d2*c1)/sin_r_;
-        }
+        scale_ = extractScale_(a2*a1 + b2*c1,
+                               a2*b1 + b2*d1,
+                               c2*a1 + d2*c1,
+                               d2*d1 + c2*b1,
+                               sin_r_, cos_r_);
         return *this;
     }
 
@@ -158,20 +156,24 @@ namespace grynca {
         rslt.sin_r_ = t2.sin_r_*t1.cos_r_ + t2.cos_r_*t1.sin_r_;
         rslt.cos_r_ = t2.cos_r_*t1.cos_r_ - t2.sin_r_*t1.sin_r_;
 
-        if (fabsf(rslt.sin_r_) < 0.001f) {
-            rslt.scale_.accX() = (a2*a1 + b2*c1)/rslt.cos_r_;
-            rslt.scale_.accY() = (d2*d1 + c2*b1)/rslt.cos_r_;
-        }
-        else {
-            rslt.scale_.accX() = (a2*b1 + b2*d1)/rslt.sin_r_;
-            rslt.scale_.accY() = (c2*a1 + d2*c1)/rslt.sin_r_;
-        }
-
+        rslt.scale_ = Transform::extractScale_(a2*a1 + b2*c1,
+                                               a2*b1 + b2*d1,
+                                               c2*a1 + d2*c1,
+                                               d2*d1 + c2*b1,
+                                               rslt.sin_r_, rslt.cos_r_);
         return rslt;
     }
 
     inline Transform operator/(const Transform& t1, const Transform& t2) {
         return operator*(t1, -t2);
+    }
+
+    inline Transform operator*(const Transform& t, f32 num) {
+        return Transform(t.position_*num, t.rotation_*num, t.scale_*num);
+    }
+
+    inline Transform operator-(const Transform& t1, const Transform& t2) {
+        return Transform(t1.position_ - t2.position_, t1.rotation_ - t2.rotation_, t1.scale_ - t2.scale_);
     }
 
     inline bool operator==(const Transform& t1, const Transform& t2) {
@@ -198,7 +200,7 @@ namespace grynca {
 
     inline Vec2 Transform::extractScale_(f32 a, f32 b, f32 c, f32 d, f32 sin_r, f32 cos_r) {
         Vec2 rslt;
-        if (fabs(sin_r) < 0.001f) {
+        if (fabs(sin_r) < maths::EPS) {
             rslt.setX(a/cos_r);
             rslt.setY(d/cos_r);
         }

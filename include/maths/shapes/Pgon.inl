@@ -12,8 +12,21 @@
 
 namespace grynca {
 
+    inline Pgon::Pgon(const Vec2* points, u32 points_cnt) {
+        points_.resize(points_cnt);
+        for (u32 i=0; i<points_cnt; ++i) {
+            points_[i] = points[i];
+        }
+    }
+
     inline ARect Pgon::calcARectBound()const {
-        return ARect(&points_[0], points_.size());
+        return ARect(&points_[0], u32(points_.size()));
+    }
+
+    inline void Pgon::transform(const Mat3& tr) {
+        for (u32 i=0; i<points_.size(); ++i) {
+            points_[i] = tr*points_[i];
+        }
     }
 
     inline bool Pgon::overlaps(const Ray& r)const {
@@ -71,7 +84,7 @@ namespace grynca {
     }
 
     inline u32 Pgon::getSize()const {
-        return points_.size();
+        return u32(points_.size());
     }
 
     inline Vec2& Pgon::getPoint(u32 id) {
@@ -96,7 +109,7 @@ namespace grynca {
 
     inline bool Pgon::isClockwise() {
         f32 area = 0;
-        u32 psize = points_.size();
+        u32 psize = u32(points_.size());
         for (u32 i=0; i<(psize-1); ++i) {
             Vec2& p1 = points_[i];
             Vec2& p2 = points_[i+1];
@@ -123,7 +136,7 @@ namespace grynca {
     }
 
     inline ARect Pgon::calcTightAABB() const {
-        return ARect(&points_[0], points_.size());
+        return ARect(&points_[0], u32(points_.size()));
     }
 
     inline ARect Pgon::calcFatAABB(const Vec2& fatness) const {
@@ -137,7 +150,7 @@ namespace grynca {
         // TODO: jde vylepsit na O(logN *N)
         //      http://geomalgorithms.com/a09-_intersect-3.html
 
-        u32 psize = points_.size();
+        u32 psize = u32(points_.size());
         fast_vector<Ray> edges(psize);
         for (u32 i=0; i<psize-1; ++i) {
             edges[i] = Ray(points_[i], points_[i+1]);
@@ -198,8 +211,8 @@ namespace grynca {
         // TODO: mozna vylepsit na O(logN *N) kdyz tohle bude pomaly
         //      http://geomalgorithms.com/a09-_intersect-3.html
         Pgon& pgon = (*pgons_)[pos];
-        u32 pgons_cnt_prev = pgons_->size();
-        u32 psize = pgon.points_.size();
+        u32 pgons_cnt_prev = u32(pgons_->size());
+        u32 psize = u32(pgon.points_.size());
 
         fast_vector<Ray> edges;
         edges.reserve(psize);
@@ -210,7 +223,7 @@ namespace grynca {
 
         simplifyInnerRec_(pos, edges);
 
-        u32 pgons_cnt_new = pgons_->size();
+        u32 pgons_cnt_new = u32(pgons_->size());
         for (u32 i=pgons_cnt_prev; i<pgons_cnt_new; ++i) {
             simplify(i);
         }
@@ -334,12 +347,16 @@ namespace grynca {
                 dists_.push_back(d);
             }
 
-            indirectSort(dists_.begin(), dists_.end(), dists_order_, std::less<f32>());
+            struct {
+                bool operator()(f32* d1, f32* d2) { return *d1 < *d2; }
+            } cmp;
+            indirectSort(dists_.begin(), dists_.end(), sorted_dists_, cmp);
 
             u32 i;
             u32 best_pt_id = InvalidId();
-            for (i=0; i<dists_order_.size(); ++i) {
-                best_pt_id = (dists_order_[i]+lower.v_id)%n;
+            for (i=0; i<sorted_dists_.size(); ++i) {
+                u32 dist_id = u32(sorted_dists_[i] - dists_.begin());
+                best_pt_id = (dist_id+lower.v_id)%n;
                 Vec2& pt = pgon.getPoint(best_pt_id);
 
                 bool in_triangle = isRightFromLine(pt, vert_p, vert)
@@ -354,7 +371,7 @@ namespace grynca {
                 break;
             }
 
-            bool point_found = (i!=dists_order_.size());
+            bool point_found = (i!=sorted_dists_.size());
             if (point_found) {
                 pgons_->emplace_back();
                 Pgon& new_pgon = pgons_->back();
@@ -474,7 +491,7 @@ namespace grynca {
 
 
     inline u32 PolygonMesh::getPgonsCount()const {
-        return polygons_.size();
+        return u32(polygons_.size());
     }
 
     inline Pgon& PolygonMesh::getPgon(u32 id) {
@@ -490,7 +507,7 @@ namespace grynca {
         // TODO: mit vektor tech co jsou dirty a projet jenom ty
         //       kdyz bude polygon empty tak ho removnout ( kdyz bude moc malej, tak ho nekam pridat?, co kdyz bude invalidni (< 3 pointy) ?)
         //
-        u32 s = polygons_.size();
+        u32 s = u32(polygons_.size());
         for (u32 i=0; i<s; ++i) {
             ASSERT(polygons_[i].isSimple());
             mod_.convexize(i);
@@ -500,5 +517,17 @@ namespace grynca {
                 mod_.half(i);
             }
         }
+    }
+
+    inline std::ostream& operator << (std::ostream& os, Pgon& p) {
+        os << "Pgon= ";
+        if (!p.points_.empty()) {
+            os << p.points_[0];
+            for (u32 i=1; i<p.points_.size(); ++i) {
+                os << ", " << p.points_[i];
+            }
+        }
+        os << std::endl;
+        return os;
     }
 }

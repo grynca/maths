@@ -15,7 +15,7 @@ namespace grynca {
     {
     }
 
-    inline Ray::Ray(const Vec2& start, const Vec2& dir, f32 length)
+    inline Ray::Ray(const Vec2& start, const Dir2& dir, f32 length)
      : start_(start), dir_(dir), length_(length), flags_(0)
     {
         flags_[bDirNormalized] = true;
@@ -32,7 +32,7 @@ namespace grynca {
     inline void Ray::normalizeDirIfNotAlready() {
         if (!isDirNormalized()) {
             normalize_(dir_, length_, flags_);
-            if (flags_[bDirInfoComputed]) {
+            if (isDirInfoCalculated()) {
                 inv_dir_.setX(1.0f/dir_.getX());
                 inv_dir_.setY(1.0f/dir_.getY());
             }
@@ -49,7 +49,7 @@ namespace grynca {
         return start_;
     }
 
-    inline const Vec2& Ray::getDir()const {
+    inline const Dir2& Ray::getDir()const {
         return dir_;
     }
 
@@ -69,7 +69,7 @@ namespace grynca {
         start_ = s;
     }
 
-    inline void Ray::setDir(const Vec2& d) {
+    inline void Ray::setDir(const Dir2& d) {
         dir_ = d;
         flags_[bDirNormalized] = false;
         if (isDirInfoCalculated()) {
@@ -77,7 +77,7 @@ namespace grynca {
         }
     }
 
-    inline void Ray::setDirN(const Vec2& d) {
+    inline void Ray::setDirN(const Dir2& d) {
         ASSERT(d.getLen() == 1.0f);
         dir_ = d;
         flags_[bDirNormalized] = true;
@@ -103,6 +103,17 @@ namespace grynca {
             size.accY() = - size.getY();
         }
         return ARect(start, size);
+    }
+
+    inline void Ray::transform(const Mat3& tr) {
+        *this = Ray(tr*getStart(), tr*getEnd());
+        if (isDirNormalized()) {
+            normalize_(dir_, length_, flags_);
+            if (isDirInfoCalculated()) {
+                inv_dir_.setX(1.0f/dir_.getX());
+                inv_dir_.setY(1.0f/dir_.getY());
+            }
+        }
     }
 
     inline bool Ray::overlaps(const Ray& r)const {
@@ -309,19 +320,28 @@ namespace grynca {
         return false;
     }
 
-    inline void Ray::normalize_(Vec2& dir_io, f32& len_out, std::bitset<bfCount>& flags_out) {
+    inline void Ray::normalize_(Dir2& dir_io, f32& len_out, std::bitset<bfCount>& flags_out) {
     // static
         len_out = dir_io.getLen();
         dir_io = dir_io/len_out;
         flags_out[bDirNormalized] = true;
     }
 
-    inline void Ray::calcDirInfo_(const Vec2& dir, Vec2& inv_dir_out, std::bitset<bfCount>& flags_out) {
+    inline void Ray::calcDirInfo_(const Dir2& dir, Vec2& inv_dir_out, std::bitset<bfCount>& flags_out) {
     // static
         inv_dir_out.setX(1.0f/dir.getX());
         inv_dir_out.setY(1.0f/dir.getY());
         flags_out[bDirXSign] = sign(dir.getX());
         flags_out[bDirYSign] = sign(dir.getY());
         flags_out[bDirInfoComputed] = true;
+    }
+
+    inline std::ostream& operator << (std::ostream& os, Ray& r) {
+        os << "Ray= s:" << r.getStart() << ", e:" << r.getEnd() << ", d:" <<r.getDir();
+        if (r.isDirNormalized()) {
+            os << ", l:" << r.getLength();
+        }
+        os << std::endl;
+        return os;
     }
 }

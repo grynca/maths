@@ -33,15 +33,15 @@ namespace grynca {
         corners[3] = getLB_(rotated_offset);
     }
 
-    inline Vec2 Rect::getWidthDir()const {
+    inline Dir2 Rect::getWidthDir()const {
         return {cosr_, sinr_};
     }
 
-    inline Vec2 Rect::getHeightDir()const {
+    inline Dir2 Rect::getHeightDir()const {
         return {-sinr_, cosr_};
     }
 
-    inline Vec2 Rect::getSizeDir()const {
+    inline Dir2 Rect::getSizeDir()const {
         return getWidthDir()+getHeightDir();
     }
 
@@ -97,6 +97,13 @@ namespace grynca {
         return ARect(corners, 4);
     }
 
+    inline void Rect::transform(const Mat3& tr) {
+        Dir2 tp = tr*Dir2(1.0, 0);
+        Angle rot = tp.getAngle();
+        f32 scale = tp.getLen();
+        *this = Rect(tr*position_, size_*scale, offset_*scale, rotation_+rot );
+    }
+
     inline bool Rect::overlaps(const Ray& r)const {
         return r.overlaps(*this);
     }
@@ -149,18 +156,19 @@ namespace grynca {
 
         int penetration_axis = -1;
         f32 smallest_overlap = std::numeric_limits<f32>::max();
+        f32 overlap_dir = 1.0f;
         for (int i=0; i<4; ++i) {
             // project corners on axis
             Interval i1 = axes[i].projectPoints(corners1, 4);
             Interval i2 = axes[i].projectPoints(corners2, 4);
-            f32 o;
-            if (!i1.overlaps(i2, o))
+            f32 o, d;
+            if (!i1.overlaps(i2, o, d))
                 // it is separation axis
                 return false;
             if (i1.contains(i2) || i2.contains(i1)) {
                 // check containment
-                f32 mins = fabs(i1.getMin()-i2.getMin());
-                f32 maxs = fabs(i1.getMax()-i2.getMax());
+                f32 mins = fabsf(i1.getMin()-i2.getMin());
+                f32 maxs = fabsf(i1.getMax()-i2.getMax());
                 if (mins < maxs)
                     o += mins;
                 else
@@ -170,11 +178,12 @@ namespace grynca {
             if (o < smallest_overlap) {
                 smallest_overlap = o;
                 penetration_axis = i;
+                overlap_dir = d;
             }
         }
 
         oi.depth_ = smallest_overlap;
-        oi.dir_out_ = axes[penetration_axis];
+        oi.dir_out_ = -overlap_dir*axes[penetration_axis];
         return true;
     }
 
@@ -225,9 +234,7 @@ namespace grynca {
     }
 
     inline std::ostream& operator << (std::ostream& os, const Rect& r) {
-        os << "Rect[p=(" << r.position_.getX() << ", " << r.position_.getY() << "), s=("
-        << r.size_.getX() << ", " << r.size_.getY() << "), o=(" << r.offset_.getX() << ", " << r.offset_.getY()
-        << "), r=" << r.rotation_ << "]" << std::endl;
+        os << "Rect= p:" << r.getPosition() << ", s:" << r.getSize() << ", o:" << r.getOffset() << ", r:" << r.getRotation() << std::endl;
         return os;
     }
 

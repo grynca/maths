@@ -2,6 +2,7 @@
 #define SHAPETYPES_H
 
 #include "types/Type.h"
+#include "NoShape.h"
 #include "Ray.h"
 #include "Circle.h"
 #include "ARect.h"
@@ -11,6 +12,7 @@
 namespace grynca {
 
     typedef TypesPack<
+            NoShape,
             Ray,
             Circle,
             ARect,

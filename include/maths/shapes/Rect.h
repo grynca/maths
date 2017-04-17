@@ -10,6 +10,7 @@ namespace grynca {
     class OverlapInfo;
     class Ray;
     class Pgon;
+    class NoShape;
 
     // general (unaligned) rectangle
     class Rect {
@@ -22,9 +23,9 @@ namespace grynca {
         Vec2 getRightBot()const;
         Vec2 getLeftBot()const;
         void getCorners(Vec2* corners)const;       // lt rt rb lb
-        Vec2 getWidthDir()const;
-        Vec2 getHeightDir()const;
-        Vec2 getSizeDir()const;
+        Dir2 getWidthDir()const;
+        Dir2 getHeightDir()const;
+        Dir2 getSizeDir()const;
 
         const Vec2& getPosition()const;
         const Vec2& getSize()const;
@@ -41,6 +42,7 @@ namespace grynca {
         void setRotation(const Angle& rot);
 
         ARect calcARectBound()const;
+        void transform(const Mat3& tr);
 
         bool overlaps(const Ray& r)const;
         bool overlaps(const Ray& r, OverlapInfo& oi)const;
@@ -52,6 +54,8 @@ namespace grynca {
         bool overlaps(const ARect& r, OverlapInfo& oi)const;
         bool overlaps(const Pgon& p)const;
         bool overlaps(const Pgon& p, OverlapInfo& oi)const;
+        bool overlaps(const NoShape& p)const { return false; }
+        bool overlaps(const NoShape& p, OverlapInfo& oi)const { return false; }
 
     private:
 

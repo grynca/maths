@@ -122,6 +122,16 @@ namespace grynca {
         return *this;
     }
 
+    inline void ARect::transform(const Mat3& tr) {
+        Vec2 pts[4] = {
+                tr * getLeftTop(),
+                tr * getRightTop(),
+                tr * getRightBot(),
+                tr * getLeftBot()
+        };
+        *this = ARect(&pts[0], 4);
+    }
+
     inline bool ARect::overlaps(const Ray& r)const {
         NEVER_GET_HERE("Not implemented");
         return false;
@@ -213,7 +223,7 @@ namespace grynca {
     }
 
     inline std::ostream& operator<<(std::ostream& os, ARect& ar) {
-        os << "ARect[p=(" << ar.getX() << ", " << ar.getY() << "), s=(" << ar.getWidth() << ", " << ar.getHeight() << ")]" << std::endl;
+        os << "ARect= p:" << ar.getCenter() << ", s:" << ar.getSize() << std::endl;
         return os;
 
     }

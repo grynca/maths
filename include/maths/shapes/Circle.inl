@@ -32,6 +32,12 @@ namespace grynca {
         return {c_-Vec2(r_, r_), Vec2(d, d)};
     }
 
+    inline void Circle::transform(const Mat3& tr) {
+        Dir2 trad = tr*Dir2(getRadius(), 0);
+        c_ = tr*getCenter();
+        r_ = trad.getLen();
+    }
+
     inline bool Circle::overlaps(const Ray& r)const {
         return r.overlaps(*this);
     }
@@ -55,7 +61,7 @@ namespace grynca {
         radsum_sqr *= radsum_sqr;
         if (cc > radsum_sqr)
             return false;
-        f32 d = sqrt(cc);
+        f32 d = sqrtf(cc);
         // must check if circles are on different positions (for avoiding division by zero)
         if (d!=0) {
             oi.depth_ = (getRadius()+c.getRadius()) - d;
@@ -110,7 +116,7 @@ namespace grynca {
         f32 cr = dv.getSqrLen();
         if (cr > (getRadius()*getRadius()))
             return false;
-        f32 d = sqrt(cr);
+        f32 d = sqrtf(cr);
         if (d!=0) {
             oi.depth_ = getRadius() - d;
             oi.dir_out_ = dv/d;
@@ -159,7 +165,7 @@ namespace grynca {
     }
 
     inline std::ostream& operator << (std::ostream& os, Circle& c) {
-        os << "Circle[c=(" << c.c_.getX() << ", " << c.c_.getY() << "), r=" << c.r_ << "]" << std::endl;
+        os << "Circle= c:" << c.getCenter() << ", r:" << c.r_ << std::endl;
         return os;
     }
 }
