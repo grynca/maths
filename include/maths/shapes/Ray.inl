@@ -1,10 +1,9 @@
-#include "Ray.h"
-#include "OverlapInfo.h"
-#include "Circle.h"
-#include "ARect.h"
-#include "Rect.h"
-#include "Pgon.h"
+#include "shapes_h.h"
 #include "functions/common.h"
+#include "maths/maths_funcs.h"
+#include "../Transform.h"
+#include "OverlapTmp.h"
+#include "ContactManifold.h"
 
 namespace grynca {
 
@@ -19,6 +18,18 @@ namespace grynca {
      : start_(start), dir_(dir), length_(length), flags_(0)
     {
         flags_[bDirNormalized] = true;
+    }
+
+    inline Ray::Ray(const Vec2& start, const Vec2& end, CalcDirInfo)
+     : Ray(start, end)
+    {
+        calcDirInfo_(dir_, inv_dir_, flags_);
+    }
+
+    inline Ray::Ray(const Vec2& start, const Dir2& dir, f32 length, CalcDirInfo)
+     : Ray(start, dir, length)
+    {
+        calcDirInfo_(dir_, inv_dir_, flags_);
     }
 
     inline bool Ray::isDirNormalized()const {
@@ -53,6 +64,10 @@ namespace grynca {
         return dir_;
     }
 
+    inline const Vec2& Ray::getInvDir()const {
+        return inv_dir_;
+    }
+
     inline Vec2 Ray::getEnd()const {
         return start_+dir_*length_;
     }
@@ -63,6 +78,10 @@ namespace grynca {
 
     inline f32 Ray::getLength()const {
         return length_;
+    }
+
+    inline const std::bitset<Ray::bfCount>& Ray::getFlags()const {
+        return flags_;
     }
 
     inline void Ray::setStart(const Vec2& s) {
@@ -106,218 +125,189 @@ namespace grynca {
     }
 
     inline void Ray::transform(const Mat3& tr) {
-        *this = Ray(tr*getStart(), tr*getEnd());
+        *this = transformOut(tr);
+    }
+
+    inline void Ray::transform(const Transform& tr) {
+        *this = transformOut(tr);
+    }
+
+    inline Ray Ray::transformOut(const Mat3& tr)const {
+        Ray rslt(tr*getStart(), tr*getEnd());
         if (isDirNormalized()) {
-            normalize_(dir_, length_, flags_);
+            rslt.normalize_(rslt.dir_, rslt.length_, rslt.flags_);
             if (isDirInfoCalculated()) {
-                inv_dir_.setX(1.0f/dir_.getX());
-                inv_dir_.setY(1.0f/dir_.getY());
+                rslt.calcDirInfo_(rslt.dir_, rslt.inv_dir_, rslt.flags_);
             }
         }
+        return rslt;
     }
 
-    inline bool Ray::overlaps(const Ray& r)const {
-        Vec2 rv1 = getToEndVec();
-        Vec2 rv2 = r.getToEndVec();
-        // http://www.codeproject.com/Tips/862988/Find-the-Intersection-Point-of-Two-Line-Segments
-        f32 dxd = cross(rv1, rv2);
-
-        if (dxd == 0.0f)
-            // parallel or collinear
-            return false;
-
-        //f32 sxd = Vec2::cross(r.start_-start_, dir_);
-        // sxd can be checked for null if we want to distinguish between parallel and collinear
-
-        f32 t = cross(r.start_-start_, rv2)/dxd;
-        f32 u = cross(r.start_-start_, rv1)/dxd;
-
-        return (0 <=t && t <= 1) && (0 <= u && u <= 1);
+    inline Ray Ray::transformOut(const Transform& tr)const {
+        return transformOut(tr.calcMatrix());
     }
 
-    inline bool Ray::overlaps(const Ray& r, OverlapInfo& oi)const {
-        Vec2 rv1 = getToEndVec();
-        Vec2 rv2 = r.getToEndVec();
-        f32 dxd = cross(rv1, rv2);
+    inline Vec2 Ray::calcSupport(const Dir2& dir)const {
+        f32 proj = dot(dir, dir_);
+        return (proj>0.0f)
+                ?getEnd()
+                :getStart();
+    }
 
-        if (dxd == 0)
-            // parallel or collinear
+    inline bool Ray::isPointInside(const Vec2& p, f32 eps)const {
+        Dir2 dir = getDir();
+        Dir2 n = dir.perpL();
+        f32 dst = maths::calcDistanceFromLine(p, getStart(), n);
+        if (fabsf(dst) >= eps)
             return false;
+        dst = maths::calcDistanceFromLine(p, getStart(), dir);
+        return dst > 0.0f && dst < getLength();
+    }
 
-        f32 t = cross(r.start_-start_, rv2)/dxd;
-        f32 u = cross(r.start_-start_, rv1)/dxd;
+    inline f32 Ray::calcArea()const {
+        return 0.0f;
+    }
 
-        if ( (0 <=t && t <= 1) && (0 <= u && u <= 1) ) {
-            oi.addIntersection_(start_+t*rv1);
-            oi.depth_ = (1.0f-t)*length_;
-            oi.dir_out_ = -dir_;
-            return true;
+    inline f32 Ray::calcInertia()const {
+        return 0.0f;
+    }
+
+    inline bool Ray::calcHitType(f32 t1, f32 t2, f32 ray_len, RayHitType& rht_out) {
+        // static
+#define T1_MIN (t1 > maths::EPS)
+#define T1_MAX (t1 < (ray_len-maths::EPS))
+#define T2_MIN (t2 > maths::EPS)
+#define T2_MAX (t2 < (ray_len-maths::EPS))
+
+        if (T1_MIN) {
+            if (T1_MAX) {
+                rht_out = (T2_MAX)?rhtImpale:rhtPoke;
+            }
+            else {
+                rht_out = rhtFallShort;
+                return false;
+            }
         }
-        return false;
+        else if (T2_MIN) {
+            if (T2_MAX) {
+                rht_out = rhtExitWound;
+            }
+            else {
+                rht_out = rhtCompletelyInside;
+                return false;
+            }
+        }
+        else {
+            rht_out = rhtPast;
+            return false;
+        }
+
+        return true;
+#undef T1_MIN
+#undef T1_MAX
+#undef T2_MIN
+#undef T2_MAX
     }
 
-    inline bool Ray::overlaps(const Circle& circle)const {
-        Vec2 d = dir_*length_;
-        Vec2 f = start_ - circle.getCenter();
+    template <typename ShapeT>
+    inline bool Ray::overlaps(const ShapeT& s)const {
+        OverlapTmp unused;
+        return overlaps(s, unused);
+    }
 
-        f32 a = d.getSqrLen();
-        f32 b = 2*dot(f, d);
+    inline bool Ray::overlaps(const ARect& ar, OverlapTmp& otmp)const {
+        return ar.overlaps(*this, otmp);
+    }
+
+    inline void Ray::calcContact(const ARect& ar, OverlapTmp& otmp, ContactManifold& cm_out)const {
+        ar.calcContact(*this, otmp, cm_out);
+        cm_out.normal *= -1;
+    }
+
+    inline bool Ray::overlaps(const Circle& circle, OverlapTmp& otmp)const {
+        otmp.ray_circle_.rv = getToEndVec();
+        Vec2 f = getStart() - circle.getCenter();
+
+        f32 a = otmp.ray_circle_.rv.getSqrLen();
+        f32 b = 2*dot(f, otmp.ray_circle_.rv);
         f32 c = f.getSqrLen() - circle.getRadius()*circle.getRadius();
 
         f32 discriminant = b*b-4*a*c;
         if (discriminant >= 0) {
             discriminant = (f32)sqrt(discriminant);
 
-            f32 t1 = (-b - discriminant)/(2*a);
-            f32 t2 = (-b + discriminant)/(2*a);
+            // t1 is the intersection, and it's closer than t2
+            // (since t1 uses -b - discriminant)
+            otmp.ray_circle_.t1 = (-b - discriminant)/(2*a);
+            otmp.ray_circle_.t2 = (-b + discriminant)/(2*a);
 
-            if( t1 >= 0 && t1 <= 1 )
-                return true;
-
-            if( t2 >= 0 && t2 <= 1 )
-                return true;
+            return calcHitType(otmp.ray_circle_.t1, otmp.ray_circle_.t2, 1.0f, otmp.ray_circle_.rht);
         }
+        // miss
         return false;
     }
 
-    inline bool Ray::overlaps(const Circle& circle, OverlapInfo& oi)const {
-        Vec2 d = dir_*length_;
-        Vec2 f = start_ - circle.getCenter();
-
-        f32 a = d.getSqrLen();
-        f32 b = 2*dot(f, d);
-        f32 c = f.getSqrLen() - circle.getRadius()*circle.getRadius();
-
-        f32 discriminant = b*b-4*a*c;
-        if (discriminant >= 0) {
-            // ray didn't totally miss sphere, so there is a solution to the equation.
-            discriminant = (f32)sqrt(discriminant);
-
-            // either solution may be on or off the ray so need to test both t1 is
-            // always the smaller value, because BOTH discriminant and a are nonnegative.
-            f32 t1 = (-b - discriminant)/(2*a);
-            f32 t2 = (-b + discriminant)/(2*a);
-
-            // 3x HIT cases:
-            //          -o->             --|-->  |            |  --|->
-            // Impale(t1 hit,t2 hit), Poke(t1 hit,t2>1), ExitWound(t1<0, t2 hit),
-
-            // 3x MISS cases:
-            //       ->  o                     o ->              | -> |
-            // FallShort (t1>1,t2>1), Past (t1<0,t2<0), CompletelyInside(t1<0, t2>1)
-
-            if( t1 >= 0 && t1 <= 1 ) {
-                // t1 is the intersection, and it's closer than t2
-                // (since t1 uses -b - discriminant)
-                // Impale
-                oi.addIntersection_(start_ + t1*d);
-                if( t2 >= 0 && t2 <= 1 ) {
-                    // Poke
-                    oi.addIntersection_(start_ + t2*d);
-                }
-                oi.depth_ = (1.0f - t1)*length_;
-                oi.dir_out_ = -dir_;
-                return true;
-            }
-
-            if( t2 >= 0 && t2 <= 1 ) {
-                // ExitWound
-                oi.addIntersection_(start_ + t2*d);
-                oi.depth_ = t2*length_;
-                oi.dir_out_ = dir_;
-                return true;
-            }
-
-            // no intn: FallShort, Past, CompletelyInside
+    inline void Ray::calcContact(const Circle& circle, OverlapTmp& otmp, ContactManifold& cm_out)const {
+        switch (otmp.ray_circle_.rht) {
+            case rhtPoke:
+                cm_out.size = 1;
+                cm_out.normal = -getDir();
+                cm_out.points[0].penetration = (1.0f - otmp.ray_circle_.t1) * getLength();
+                cm_out.points[0].position = getStart() + otmp.ray_circle_.t1 * otmp.ray_circle_.rv;
+                break;
+            case rhtImpale:
+                cm_out.size = 2;
+                cm_out.normal = -getDir();
+                cm_out.points[0].penetration = (1.0f - otmp.ray_circle_.t1) * getLength();
+                cm_out.points[0].position = getStart() + otmp.ray_circle_.t1 * otmp.ray_circle_.rv;
+                cm_out.points[1].penetration = (1.0f - otmp.ray_circle_.t2) * getLength();
+                cm_out.points[1].position = getStart() + otmp.ray_circle_.t2 * otmp.ray_circle_.rv;
+                break;
+            case rhtExitWound:
+                cm_out.size = 1;
+                cm_out.normal = getDir();
+                cm_out.points[0].penetration = otmp.ray_circle_.t2 * getLength();
+                cm_out.points[0].position = getStart() + otmp.ray_circle_.t2 * otmp.ray_circle_.rv;
+                break;
+            default:
+                NEVER_GET_HERE("shouldnt call for miss cases.");
+                return;
         }
-        // no intersection
-        return false;
     }
 
-    inline bool Ray::overlaps(const ARect& rect)const {
-        ASSERT(isDirInfoCalculated() && "Ray must have its dir info calculated.");
+    inline bool Ray::overlaps(const Ray& r, OverlapTmp& otmp)const {
+        otmp.ray_ray_.rv1 = getToEndVec();
 
-        //http://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection
-
-        Vec2 rect_bounds[2];
-        rect_bounds[0] = rect.getLeftTop();
-        rect_bounds[1] = rect.getRightBot();
-
-        f32 tmin = (rect_bounds[flags_[bDirXSign]].getX() - start_.getX()) * inv_dir_.getX();
-        f32 tymax = (rect_bounds[1-(int)flags_[bDirYSign]].getY() - start_.getY()) * inv_dir_.getY();
-        if (tmin > tymax)
+        f32 u;
+        if (!overlapLineSegVSLineSeg(getStart(), otmp.ray_ray_.rv1, r.getStart(), r.getToEndVec(), otmp.ray_ray_.t, u))
             return false;
 
-        f32 tmax = (rect_bounds[1-(int)flags_[bDirXSign]].getX() - start_.getX()) * inv_dir_.getX();
-        f32 tymin = (rect_bounds[flags_[bDirYSign]].getY() - start_.getY()) * inv_dir_.getY();
-
-        return (tymin <= tmax);
+        return maths::betwZeroOne(otmp.ray_ray_.t) && maths::betwZeroOne(u);
     }
 
-    inline bool Ray::overlaps(const ARect& r, OverlapInfo& oi)const {
-        NEVER_GET_HERE("Not implemented.");
-        return false;
+    inline void Ray::calcContact(const Ray& r, OverlapTmp& otmp, ContactManifold& cm_out)const {
+        cm_out.size = 1;
+        cm_out.normal = -getDir();
+        cm_out.points[0].penetration = (1.0f - otmp.ray_ray_.t) * getLength();
+        cm_out.points[1].position = getStart() + otmp.ray_ray_.t * otmp.ray_ray_.rv1;
     }
 
-    inline bool Ray::overlaps(const Rect& r)const {
-        Vec2 wd = r.getWidthDir();
-        Vec2 hd = r.getHeightDir();
-        Ray rays[4] = {
-                Ray{r.getLeftTop(), wd, r.getSize().getX()},
-                Ray{r.getRightTop(), hd, r.getSize().getY()},
-                Ray{r.getLeftBot(), wd, r.getSize().getX()},
-                Ray{r.getLeftTop(), hd, r.getSize().getY()}
-        };
-
-
-        for (u32 i=0; i<4; ++i) {
-            if (r.overlaps(rays[i]))
-                return true;
-        }
-        return false;
+    inline bool Ray::overlaps(const Rect& r, OverlapTmp& otmp)const {
+        return r.overlaps(*this, otmp);
     }
 
-    inline bool Ray::overlaps(const Rect& r, OverlapInfo& oi)const {
-        Vec2 wd = r.getWidthDir();
-        Vec2 hd = r.getHeightDir();
-        Ray rays[4] = {
-                Ray{r.getLeftTop(), wd, r.getSize().getX()},
-                Ray{r.getRightTop(), hd, r.getSize().getY()},
-                Ray{r.getLeftBot(), wd, r.getSize().getX()},
-                Ray{r.getLeftTop(), hd, r.getSize().getY()}
-        };
-
-        // TODO: depth pocitat nejak lip, aby k necemu byla
-        bool overlap_rslt = false;
-        f32 prev_depth = 0.0f;
-        for (u32 i=0; i<4; ++i) {
-            if (overlaps(rays[i], oi)) {
-                overlap_rslt = true;
-                if (oi.getIntersectionsCount() == 1) {
-                    prev_depth = oi.depth_;
-                }
-                else {
-                    if (prev_depth < oi.depth_) {
-                        oi.depth_ = prev_depth;
-                    }
-                    else {
-                        // make nearest intersection first
-                        std::swap(oi.intersections_[0], oi.intersections_[1]);
-                    }
-                    // max 2 intersections
-                    return true;
-                }
-            }
-        }
-        return overlap_rslt;
+    inline void Ray::calcContact(const Rect& r, OverlapTmp& otmp, ContactManifold& cm_out)const {
+        r.calcContact(*this, otmp, cm_out);
+        cm_out.normal *= -1;
     }
 
-    inline bool Ray::overlaps(const Pgon& p)const {
-        return false;
+    inline bool Ray::overlaps(const Pgon& p, OverlapTmp& otmp)const {
+        return p.overlaps(*this, otmp);
     }
 
-    inline bool Ray::overlaps(const Pgon& p, OverlapInfo& oi)const {
-        return false;
+    inline void Ray::calcContact(const Pgon& p, OverlapTmp& otmp, ContactManifold& cm_out)const {
+        p.calcContact(*this, otmp, cm_out);
+        cm_out.normal *= -1;
     }
 
     inline void Ray::normalize_(Dir2& dir_io, f32& len_out, std::bitset<bfCount>& flags_out) {
@@ -331,8 +321,8 @@ namespace grynca {
     // static
         inv_dir_out.setX(1.0f/dir.getX());
         inv_dir_out.setY(1.0f/dir.getY());
-        flags_out[bDirXSign] = sign(dir.getX());
-        flags_out[bDirYSign] = sign(dir.getY());
+        flags_out[bDirXSign] = (dir.getX() < 0);
+        flags_out[bDirYSign] = (dir.getY() < 0);
         flags_out[bDirInfoComputed] = true;
     }
 
@@ -341,7 +331,6 @@ namespace grynca {
         if (r.isDirNormalized()) {
             os << ", l:" << r.getLength();
         }
-        os << std::endl;
         return os;
     }
 }

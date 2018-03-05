@@ -13,7 +13,8 @@ namespace grynca {
         void setMax(f32 m);
 
         bool overlaps(const Interval& i);
-        bool overlaps(const Interval& i, f32& penetration, f32& dir);
+        bool overlaps(const Interval& i, f32& penetration_out);
+        bool overlaps(const Interval& i, f32& penetration_out, f32& dir_out);   // finds shortest overlap dir
         bool contains(const Interval& i);
 
     private:

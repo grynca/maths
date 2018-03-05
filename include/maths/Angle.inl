@@ -10,9 +10,13 @@ namespace grynca {
     {
     }
 
+    template<i32 FromDegs, i32 ToDegs, u32 DD>
     inline Angle Angle::random() {
         // static
-        return f32(rand()%3600)*Pi/1800.0f;
+        static constexpr u32 R = (ToDegs-FromDegs)*DD;
+        static constexpr f32 F = FromDegs*Pi/180.f;
+        static constexpr f32 N = Pi/(180.0f*DD);
+        return f32(rand()%R)*N + F;
     }
 
     inline constexpr Angle Angle::degrees(f32 degs) {
@@ -57,6 +61,25 @@ namespace grynca {
         f32 cos;
         getSinCos(sin, cos);
         return {cos, sin};
+    }
+
+    inline bool Angle::isZero()const {
+        return rads_ == 0.0f;
+    }
+
+    inline Dir2 Angle::invertRotDir(const Dir2& rot_dir) {
+    //static
+        // negate sine
+        return {rot_dir.getX(), -rot_dir.getY()};
+    }
+
+    inline Dir2 Angle::combineRotations(const Dir2& rot_dir1, const Dir2& rot_dir2) {
+    // static
+        f32 c1 = rot_dir1.getX();
+        f32 s1 = rot_dir1.getY();
+        f32 c2 = rot_dir2.getX();
+        f32 s2 = rot_dir2.getY();
+        return {c1*c2 - s1*s2, s1*c2 + c1*s2};
     }
 
     inline Angle& Angle::normalize() {
@@ -105,6 +128,10 @@ namespace grynca {
 
     inline Angle Angle::operator-()const {
         return Angle(-rads_);
+    }
+
+    inline Angle::operator f32()const {
+        return rads_;
     }
 
     inline f32 Angle::cos_from_sin_(f32 sinr, f32 x)const {
@@ -167,6 +194,10 @@ namespace grynca {
 
     inline bool operator>(const Angle& lhs, const Angle& rhs) {
         return lhs.rads_ > rhs.rads_;
+    }
+
+    inline f32 minAngleDiff(const Angle& a1, const Angle& a2) {
+        return (a1-a2).normalize();
     }
 }
 

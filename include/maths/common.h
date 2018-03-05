@@ -3,7 +3,8 @@
 
 namespace grynca {
     namespace maths {
-        static constexpr float EPS = 0.001f;
+        static constexpr f32 EPS = 0.001f;
+        static constexpr f32 EPS_SQRT = 0.0316228f;
     }
 }
 

@@ -18,15 +18,15 @@ namespace grynca {
 
     inline Mat3 Mat3::createTransform(const Vec2& translation, const Angle& rotation, const Vec2& scale) {
     //static
-        return createTransform(translation, rotation.getSin(), rotation.getCos(), scale);
+        return createTransform(translation, rotation.getDir(), scale);
     }
 
-    inline Mat3 Mat3::createTransform(const Vec2& translation, f32 sin_r, f32 cos_r, const Vec2& scale) {
+    inline Mat3 Mat3::createTransform(const Vec2& translation, const Dir2& rot_dir, const Vec2& scale) {
     // static
-        Vec2 sins = sin_r*scale;
-        Vec2 coss = cos_r*scale;
+        Vec2 sins = rot_dir.getY()*scale;
+        Vec2 coss = rot_dir.getX()*scale;
 
-        return {coss.getX(), sins.getX(), 0,
+        return {coss.getX(), sins.getX(), 0 ,
                 -sins.getY(), coss.getY(), 0,
                 translation.getX(), translation.getY(), 1};
 
@@ -41,11 +41,13 @@ namespace grynca {
 
     inline Mat3 Mat3::createRotationT(const Angle& rotation) {
     //static
-        return createRotationT(rotation.getSin(), rotation.getCos());
+        return createRotationT(rotation.getDir());
     }
 
-    inline Mat3 Mat3::createRotationT(f32 sin_r, f32 cos_r) {
-    //static
+    inline Mat3 Mat3::createRotationT(const Dir2& rot_dir) {
+    //statict
+        f32 cos_r = rot_dir.getX();
+        f32 sin_r = rot_dir.getY();
         return {cos_r, sin_r, 0,
                 -sin_r, cos_r, 0,
                 0, 0, 1};

@@ -1,56 +1,111 @@
 #ifndef POLYGON_H
 #define POLYGON_H
 
-namespace grynca {
+#include "../maths_config.h"
+#include "types/Mask.h"
+#include "shapes_fw.h"
 
-    //fw
-    class Ray;
-    class Rect;
-    class Circle;
-    class ARect;
-    class OverlapInfo;
-    class NoShape;
+namespace grynca {
 
     class Pgon {
         friend std::ostream& operator << (std::ostream& os, Pgon& p);
     public:
-        Pgon() {}
+        static const u32 InvalidEdgeId = MATHS_MAX_PGON_SIZE;
+
+        Pgon();
         Pgon(const Vec2* points, u32 points_cnt);
+        Pgon(const Pgon& p);
+        Pgon(Pgon&& p) = default;
 
         ARect calcARectBound()const;
+        // changes "this"
         void transform(const Mat3& tr);
+        void transform(const Transform& tr);
+        // returns new transformed obj
+        Pgon transformOut(const Mat3& tr)const;
+        Pgon transformOut(const Transform& tr)const;
 
-        bool overlaps(const Ray& r)const;
-        bool overlaps(const Ray& r, OverlapInfo& oi)const;
-        bool overlaps(const Rect& r)const;
-        bool overlaps(const Rect& r, OverlapInfo& oi)const;
-        bool overlaps(const Circle& c)const;
-        bool overlaps(const Circle& c, OverlapInfo& oi)const;
-        bool overlaps(const ARect& r)const;
-        bool overlaps(const ARect& r, OverlapInfo& oi)const;
-        bool overlaps(const Pgon& p)const;
-        bool overlaps(const Pgon& p, OverlapInfo& oi)const;
-        bool overlaps(const NoShape& p)const { return false; }
-        bool overlaps(const NoShape& p, OverlapInfo& oi)const { return false; }
+        bool isPointInside(const Vec2& p)const;
+        f32 calcArea()const;
+        f32 calcInertia()const;
 
         bool isEmpty()const;
         u32 getSize()const;
-        Vec2& getPoint(u32 id);
+        Vec2& accPoint(u32 id);     // also dirties normals around the point
         const Vec2& getPoint(u32 id)const;
+        u32 wrapPointId(u32 pt_id)const;
+
+        // access to linear points memory
+        const Vec2* getPointsData()const;
+        Vec2* accPointsData();      // warn: this bypasses normal dirtying
+
         void addPoint(const Vec2& p);
         void insertPoint(u32 pos, const Vec2& p);
+        void insertPoints(u32 pos, const Vec2* points, u32 count);
+        void removePoint(u32 pos);
+        void removePoints(u32 pos, u32 count);
+        // f(Vec2& pt)
+        template <typename Func>
+        void loopPoints(const Func& cb);
+        // f(const Vec2& pt)
+        template <typename Func>
+        void loopPoints(const Func& cb)const;
+
+        // f(Vec2& e_start, Vec2& e_end, u32& edge_id)                  // for early exit store InvalidEdgeId to edge_id
+        template <typename Func>
+        void loopEdges(const Func& cb);
+        // f(const Vec2& e_start, const Vec2& e_end, u32& edge_id)      // for early exit store InvalidEdgeId to edge_id
+        template <typename Func>
+        void loopEdges(const Func& cb)const;
+
         void reverse();
-        u32 getSupportId(const Vec2& dir);     // returns id of vert with longest projection in dir
+        Vec2 calcSupport(const Dir2& dir)const;
+        Vec2 calcSupport(const Dir2& dir, u32& pt_id_out)const;
+        u32 findNearestPointTo(const Vec2& target_pt, f32& dist_sqr_out)const;
         ARect calcTightAABB() const;
         ARect calcFatAABB(const Vec2& fatness) const;
+        Vec2 calcCenter()const;
 
-        bool isClockwise();
-        bool isSimple();        // false if self-intersecting
-        bool isConvex();
+        bool isClockwise()const;
+        bool isSimple()const;        // false if self-intersecting
+        bool isConvex()const;
+
+        // normals pointing out of polygon
+        void invalidateNormals();
+        void calculateNormalsIfNeeded()const;
+        const Dir2& getNormal(u32 id)const;
+        Dir2 getEdgeDir(u32 id)const;
+        f32 calcEdgeLength(u32 id)const;        // id != getSize()-1
+        f32 calcLastEdgeLength()const;
+        void calcEdgeLengths(f32 (&lengths_out)[MATHS_MAX_PGON_SIZE])const;
+        Dir2& accNormal(u32 id);
+
+        template <typename ShapeT>
+        bool overlaps(const ShapeT& sh)const;
+
+        bool overlaps(const ARect& ar, OverlapTmp& otmp)const;
+        void calcContact(const ARect& ar, OverlapTmp& otmp, ContactManifold& cm_out)const;
+
+        bool overlaps(const Circle& c, OverlapTmp& otmp)const;
+        void calcContact(const Circle& c,OverlapTmp& otmp, ContactManifold& cm_out)const;
+
+        bool overlaps(const Ray& r, OverlapTmp& otmp)const;
+        void calcContact(const Ray& r, OverlapTmp& otmp, ContactManifold& cm_out)const;
+
+        bool overlaps(const Rect& r, OverlapTmp& otmp)const;
+        void calcContact(const Rect& r, OverlapTmp& otmp, ContactManifold& cm_out)const;
+
+        bool overlaps(const Pgon& p, OverlapTmp& otmp)const;
+        void calcContact(const Pgon& p, OverlapTmp& otmp, ContactManifold& cm_out)const;
     private:
-        friend class PgonModifier;
+        void calculateNormals_()const;
+
+        static constexpr u32 BitsForEdgeId_ = floorLog2(MATHS_MAX_PGON_SIZE);
+
+        mutable Mask<MATHS_MAX_PGON_SIZE> dirty_normals_;
 
         fast_vector<Vec2> points_;
+        mutable fast_vector<Dir2> normals_;
     };
 
     class PgonModifier {
@@ -73,9 +128,14 @@ namespace grynca {
             Vec2 int_point;
             u32 v_id;
         };
+        struct Edges {
+            Vec2 starts[MATHS_MAX_PGON_SIZE];
+            Vec2 vectors[MATHS_MAX_PGON_SIZE];
+            u32 size;
+        };
 
-        void simplifyInnerRec_(u32 pos, fast_vector<Ray>& edges_io);
-        void splitEdge_(u32 pos, const Vec2& split_point, fast_vector<Ray>& edges_io, u32 edge1_id, u32 edge2_id);
+        void simplifyInnerRec_(u32 pos, Edges& edges);
+        void splitEdge_(u32 pos, const Vec2& split_point, Edges& edges, u32 edge1_id, u32 edge2_id);
 
         bool decomposeInnerRec_(u32 pos, const IdTriplet& v);
         void checkIntersectionCandidate_(Pgon& pgon, const IdTriplet& reflex_v, const IdTriplet& cand_v, IntCtx& lower_out, IntCtx& upper_out);
@@ -101,7 +161,9 @@ namespace grynca {
     };
 
 }
-
-
-#include "Pgon.inl"
 #endif //POLYGON_H
+
+#if !defined(PGON_INL) && !defined(WITHOUT_IMPL)
+#define PGON_INL
+# include "Pgon.inl"
+#endif // PGON_INL

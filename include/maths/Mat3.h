@@ -19,16 +19,16 @@ namespace grynca {
         friend std::ostream& operator <<(std::ostream& os, const Mat3& m);
     public:
         Mat3();     // creates unit matrix
-        Mat3(f32 v00, f32 v01, f32 v02,
-             f32 v10, f32 v11, f32 v12,
-             f32 v20, f32 v21, f32 v22);
+        Mat3(f32 v00, f32 v01, f32 v02,     // column1
+             f32 v10, f32 v11, f32 v12,     // column2
+             f32 v20, f32 v21, f32 v22);    // column3
 
         // translate*rotate*scale(first)
-        static Mat3 createTransform(const Vec2& translation, const Angle& rotation, const Vec2& scale);
-        static Mat3 createTransform(const Vec2& translation, f32 sin_r, f32 cos_r, const Vec2& scale);
+        static Mat3 createTransform(const Vec2& translation, const Angle& rotation, const Vec2& scale = {1, 1});
+        static Mat3 createTransform(const Vec2& translation, const Dir2& rot_dir, const Vec2& scale = {1, 1});
         static Mat3 createTranslationT(const Vec2& translation);
         static Mat3 createRotationT(const Angle& rotation);
-        static Mat3 createRotationT(f32 sin_r, f32 cos_r);
+        static Mat3 createRotationT(const Dir2& rot_dir);
         static Mat3 createScaleT(const Vec2& scale);
         static Mat3 createProjection2D(const Vec2& viewport_size);
         static Mat3 createProjectionIverse2D(const Vec2& viewport_size);

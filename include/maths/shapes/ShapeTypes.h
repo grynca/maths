@@ -2,22 +2,20 @@
 #define SHAPETYPES_H
 
 #include "types/Type.h"
-#include "NoShape.h"
-#include "Ray.h"
-#include "Circle.h"
 #include "ARect.h"
+#include "Circle.h"
+#include "Ray.h"
 #include "Rect.h"
 #include "Pgon.h"
 
 namespace grynca {
 
-    typedef TypesPack<
-            NoShape,
-            Ray,
-            Circle,
-            ARect,
-            Rect,
-            Pgon
+    typedef TypesPack <
+        Ray,
+        Circle,
+        ARect,
+        Rect,
+        Pgon
     > ShapeTypes;
 
 }

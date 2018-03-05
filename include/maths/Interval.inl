@@ -26,21 +26,33 @@ namespace grynca {
         return max_ > i.min_ && min_ < i.max_;
     }
 
-    inline bool Interval::overlaps(const Interval& i, f32& penetration, f32& dir) {
+    inline bool Interval::overlaps(const Interval& i, f32& penetration_out) {
         f32 p1 = max_ - i.min_;
-        if (p1 <= 0)
+        if (p1 < maths::EPS)
             return false;
         f32 p2 = i.max_ - min_;
-        if (p2 <= 0)
+        if (p2 < maths::EPS)
+            return false;
+
+        penetration_out = p1;
+        return true;
+    }
+
+    inline bool Interval::overlaps(const Interval& i, f32& penetration_out, f32& dir_out) {
+        f32 p1 = max_ - i.min_;
+        if (p1 < maths::EPS)
+            return false;
+        f32 p2 = i.max_ - min_;
+        if (p2 < maths::EPS)
             return false;
 
         if (p2 < p1) {
-            dir = -1.0f;
-            penetration = p2;
+            dir_out = -1.0f;
+            penetration_out = p2;
         }
         else {
-            dir = 1.0f;
-            penetration = p1;
+            dir_out = 1.0f;
+            penetration_out = p1;
         }
         return true;
     }

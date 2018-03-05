@@ -5,14 +5,20 @@
 
 //#define CONSTANT_DT 1.0f/60
 
-static inline void drawSmallRect(SDL_Renderer *r, f32 x, f32 y) {
-    SDL_Rect rect;
-    rect.x = (int)roundf(x)-2;
-    rect.y = (int)roundf(y)-2;
-    rect.w = 4;
-    rect.h = 4;
-    SDL_RenderDrawRect(r, &rect);
-}
+Vec2 points1[] = {
+    {296, 403}, {435, 162}, {564, 486}, {457, 328}, {388, 312}
+};
+Vec2 points2[] = {
+    {596, 454}, {458, 352}, {316, 440}, {461, 116}, {568, 272}, {483, 192}
+};
+Vec2 points3[] = {
+    {232, 506}, {237, 195}, {514, 171}, {568, 274}, {615, 171}, {714, 162}, {731, 239}, {849, 264},
+    {814, 531}, {814, 531}, {688, 527}, {652, 460}, {560, 511}, {518, 445}, {380, 507}
+};
+Vec2 points4[] = {
+    {372, 249}, {318, 141}, {414, 71}, {492, 39}, {642, 224}, {663, 45}, {878, 222}, {714, 375},
+    {978, 348}, {1020, 539}, {943, 690}, {524, 375}, {420, 570}, {570, 713}, {162, 461}
+};
 
 class TestPolygonsFixture : public SDLTest {
 public:
@@ -29,6 +35,7 @@ public:
         drag_pid = -1;
         hl_pgon = hl_pid = 0;
 
+        pgons.clear();
         pgons_mod.setPgons(pgons);
 
         // add random polygon
@@ -47,7 +54,6 @@ public:
     }
 
     void close() {
-
     }
 
     void handleEvent(SDL_Event& evt) {
@@ -90,6 +96,10 @@ public:
                             std::cout << "polygon must be clockwise." << std::endl;
                             break;
                         }
+                        if (!pgons[hl_pgon].isSimple()) {
+                            std::cout << "polygon must be simple." << std::endl;
+                            break;
+                        }
                         BlockMeasure m("polygon halving.");
                         pgons_mod.half(hl_pgon);
                         std::cout << " Created " << 1 << " new polygons. " << std::endl;
@@ -108,65 +118,33 @@ public:
                     case (SDLK_1): {
                         pgons.clear();
                         pgons.push_back();
-
-                        pgons[0].addPoint({296, 403});
-                        pgons[0].addPoint({435, 162});
-                        pgons[0].addPoint({564, 486});
-                        pgons[0].addPoint({457, 328});
-                        pgons[0].addPoint({388, 312});
+                        for (u32 i=0; i<ARRAY_SIZE(points1); ++i) {
+                            pgons[0].addPoint(points1[i]);
+                        }
                         hl_pgon = hl_pid = 0;
                     }break;
                     case (SDLK_2): {
                         pgons.clear();
                         pgons.push_back();
-
-                        pgons[0].addPoint({596, 454});
-                        pgons[0].addPoint({458, 352});
-                        pgons[0].addPoint({316, 440});
-                        pgons[0].addPoint({461, 116});
-                        pgons[0].addPoint({568, 272});
-                        pgons[0].addPoint({483, 192});
+                        for (u32 i=0; i<ARRAY_SIZE(points2); ++i) {
+                            pgons[0].addPoint(points2[i]);
+                        }
                         hl_pgon = hl_pid = 0;
                     }break;
                     case (SDLK_3): {
                         pgons.clear();
                         pgons.push_back();
-
-                        pgons[0].addPoint({232, 506});
-                        pgons[0].addPoint({237, 195});
-                        pgons[0].addPoint({514, 171});
-                        pgons[0].addPoint({568, 274});
-                        pgons[0].addPoint({615, 171});
-                        pgons[0].addPoint({714, 162});
-                        pgons[0].addPoint({731, 239});
-                        pgons[0].addPoint({849, 264});
-                        pgons[0].addPoint({814, 531});
-                        pgons[0].addPoint({688, 527});
-                        pgons[0].addPoint({652, 460});
-                        pgons[0].addPoint({560, 511});
-                        pgons[0].addPoint({518, 445});
-                        pgons[0].addPoint({380, 507});
+                        for (u32 i=0; i<ARRAY_SIZE(points3); ++i) {
+                            pgons[0].addPoint(points3[i]);
+                        }
                         hl_pgon = hl_pid = 0;
                     }break;
                     case (SDLK_4): {
                         pgons.clear();
                         pgons.push_back();
-
-                        pgons[0].addPoint({372, 249});
-                        pgons[0].addPoint({318, 141});
-                        pgons[0].addPoint({414, 71});
-                        pgons[0].addPoint({492, 39});
-                        pgons[0].addPoint({642, 224});
-                        pgons[0].addPoint({663, 45});
-                        pgons[0].addPoint({878, 222});
-                        pgons[0].addPoint({714, 375});
-                        pgons[0].addPoint({978, 348});
-                        pgons[0].addPoint({1020, 539});
-                        pgons[0].addPoint({943, 690});
-                        pgons[0].addPoint({524, 375});
-                        pgons[0].addPoint({420, 570});
-                        pgons[0].addPoint({570, 713});
-                        pgons[0].addPoint({162, 461});
+                        for (u32 i=0; i<ARRAY_SIZE(points4); ++i) {
+                            pgons[0].addPoint(points4[i]);
+                        };
                         hl_pgon = hl_pid = 0;
                     }break;
                 }
@@ -206,8 +184,8 @@ public:
             }break;
             case (SDL_MOUSEMOTION): {
                 if (drag_pid>=0) {
-                    pgons[hl_pgon].getPoint(drag_pid).setX(evt.button.x);
-                    pgons[hl_pgon].getPoint(drag_pid).setY(evt.button.y);
+                    pgons[hl_pgon].accPoint(drag_pid).setX(evt.button.x);
+                    pgons[hl_pgon].accPoint(drag_pid).setY(evt.button.y);
                 }
             }break;
         }
@@ -223,19 +201,19 @@ public:
         for (u32 i=0; i<pgons.size(); ++i) {
             Pgon& p = pgons[i];
             for (u32 j=0; j<p.getSize(); ++j) {
-                Vec2& p1 = p.getPoint(j);
-                Vec2& p2 = p.getPoint((j+1)%p.getSize());
+                const Vec2& p1 = p.getPoint(j);
+                const Vec2& p2 = p.getPoint((j+1)%p.getSize());
                 SDL_RenderDrawLine(r, (int)p1.getX(), (int)p1.getY(), (int)p2.getX(), (int)p2.getY());
             }
         }
 
         SDL_SetRenderDrawColor(r, 0, 0, 255, 255);
         for (u32 i=0; i<pgons[hl_pgon].getSize(); ++i) {
-            drawSmallRect(r, pgons[hl_pgon].getPoint(i).getX(), pgons[hl_pgon].getPoint(i).getY());
+            DebugDraw::drawSquareAt<4>(r, pgons[hl_pgon].getPoint(i).getX(), pgons[hl_pgon].getPoint(i).getY());
         }
 
         SDL_SetRenderDrawColor(r, 0, 255, 0, 255);
-        drawSmallRect(r, pgons[hl_pgon].getPoint(hl_pid).getX(), pgons[hl_pgon].getPoint(hl_pid).getY());
+        DebugDraw::drawSquareAt<4>(r, pgons[hl_pgon].getPoint(hl_pid).getX(), pgons[hl_pgon].getPoint(hl_pid).getY());
     }
 };
 

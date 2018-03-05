@@ -1,35 +1,61 @@
 #include "Transform.h"
 #include "common.h"
+#include "glm/mat2x2.hpp"
 
 namespace grynca {
+
+    inline Transform::Transform()
+    : position_(0, 0), scale_(1, 1), rotation_(0.0f), rot_dir_(1.0f, 0.0f)
+    {}
+
     inline Transform::Transform(const Vec2& position, const Angle& rotation, const Vec2& scale)
-     : position_(position), scale_(scale), rotation_(rotation)
+     : position_(position), scale_(scale), rotation_(rotation), rot_dir_(rotation.getDir())
     {
-        rotation_.getSinCos(sin_r_, cos_r_);
     }
 
     inline Transform::Transform(const Mat3& m)
      : position_(m.val(2, 0), m.val(2, 1))
     {
-        f32 a = m.val(0, 0);
-        f32 b = m.val(0, 1);
-        f32 c = m.val(1, 0);
-        f32 d = m.val(1, 1);
-        rotation_ = extractRotation_(a, b, sin_r_, cos_r_);
-        scale_ = extractScale_(a, b, c, d, sin_r_, cos_r_);
+        glm::mat2 rs_mat(m.val(0, 0), m.val(1, 0),
+                         m.val(0, 1), m.val(1, 1));
+        rotation_ = extractRotation_(rs_mat[0][0], rs_mat[1][0], rot_dir_);
+        scale_ = extractScale_(rs_mat, rot_dir_);
     }
 
-    inline void Transform::setPosition(const Vec2& p) {
+    inline Transform Transform::createTranslation(const Vec2& position) {
+        // static
+        return Transform(position, 0, {1,1});
+    }
+
+    inline Transform Transform::createRotation(const Angle& rotation) {
+        // static
+        return Transform({0, 0}, rotation, {1,1});
+    }
+
+    inline Transform Transform::createScale(const Vec2& scale) {
+        // static
+        return Transform({0, 0}, 0, scale);
+    }
+
+    Transform& Transform::set(const Transform& tr) {
+        *this = tr;
+        return *this;
+    }
+
+    inline Transform& Transform::setPosition(const Vec2& p) {
         position_ = p;
+        return *this;
     }
 
-    inline void Transform::setScale(const Vec2& s) {
+    inline Transform& Transform::setScale(const Vec2& s) {
         scale_ = s;
+        return *this;
     }
 
-    inline void Transform::setRotation(const Angle& r) {
+    inline Transform& Transform::setRotation(const Angle& r) {
         rotation_ = r;
-        rotation_.getSinCos(sin_r_, cos_r_);
+        rot_dir_ = rotation_.getDir();
+        return *this;
     }
 
     inline const Vec2& Transform::getPosition()const {
@@ -44,14 +70,6 @@ namespace grynca {
         return rotation_;
     }
 
-    inline f32 Transform::getRotSin()const {
-        return sin_r_;
-    }
-
-    inline f32 Transform::getRotCos()const {
-        return cos_r_;
-    }
-
     inline Vec2& Transform::accPosition() {
         return position_;
     }
@@ -60,64 +78,56 @@ namespace grynca {
         return scale_;
     }
 
-    inline Angle& Transform::accRotation() {
-        return rotation_;
-    }
-
-    inline Dir2 Transform::getRightDir()const {
-        return Dir2(cos_r_, sin_r_);
+    inline const Dir2& Transform::getRightDir()const {
+        return rot_dir_;
     }
 
     inline Dir2 Transform::getBottomDir()const {
-        return Dir2(-sin_r_, cos_r_);
+        return rot_dir_.perpR();
     }
 
     inline Mat3 Transform::calcMatrix()const {
-        return Mat3::createTransform(position_, sin_r_, cos_r_, scale_);
+        return Mat3::createTransform(position_, rot_dir_, scale_);
     }
 
-    inline void Transform::move(const Vec2& m) {
+    inline Transform& Transform::move(const Vec2& m) {
         position_+=m;
+        return *this;
     }
 
-    inline void Transform::moveRelative(const Vec2& m) {
-        position_+= m.rotate(sin_r_, cos_r_);
+    inline Transform& Transform::moveRelative(const Vec2& m) {
+        position_+= m.rotate(rot_dir_);
+        return *this;
     }
 
-    inline void Transform::rotate(const Angle& r) {
+    inline Transform& Transform::rotate(const Angle& r) {
         rotation_ += r;
-        rotation_.getSinCos(sin_r_, cos_r_);
+        rot_dir_ = rotation_.getDir();
+        return *this;
     }
 
-    inline void Transform::scale(const Vec2& s) {
+    inline Transform& Transform::scale(const Vec2& s) {
         scale_ *= s;
+        return *this;
     }
 
+    inline const Dir2& Transform::getRotDir()const {
+        return rot_dir_;
+    }
+
+    inline glm::mat2 Transform::calcRSMat()const {
+        f32 cos_r = rot_dir_.getX();
+        f32 sin_r = rot_dir_.getY();
+        return glm::mat2 (cos_r*scale_.getX(), -sin_r*scale_.getY(),
+                          sin_r*scale_.getX(), cos_r*scale_.getY());
+    }
+
+    inline bool Transform::isUnit()const {
+        return position_.isZero() && rotation_.isZero() && scale_.getX() == 1 && scale_.getY() == 1;
+    }
 
     inline Transform& Transform::operator*=(const Transform& t) {
-        f32 a1 = cos_r_*scale_.getX();
-        f32 b1 = sin_r_*scale_.getX();
-        f32 c1 = -sin_r_*scale_.getY();
-        f32 d1 = cos_r_*scale_.getY();
-
-        f32 a2 = t.cos_r_*t.scale_.getX();
-        f32 b2 = t.sin_r_*t.scale_.getX();
-        f32 c2 = -t.sin_r_*t.scale_.getY();
-        f32 d2 = t.cos_r_*t.scale_.getY();
-
-        position_.accX() = t.position_.getX()*a1 + t.position_.getY()*c1 + position_.getX();
-        position_.accY() = t.position_.getX()*b1 + t.position_.getY()*d1 + position_.getY();
-
-        rotation_ = t.rotation_ + rotation_;
-        rotation_.normalize();
-        sin_r_ = t.sin_r_*cos_r_ + t.cos_r_*sin_r_;
-        cos_r_ = t.cos_r_*cos_r_ - t.sin_r_*sin_r_;
-
-        scale_ = extractScale_(a2*a1 + b2*c1,
-                               a2*b1 + b2*d1,
-                               c2*a1 + d2*c1,
-                               d2*d1 + c2*b1,
-                               sin_r_, cos_r_);
+        *this = *this*t;
         return *this;
     }
 
@@ -128,39 +138,26 @@ namespace grynca {
     inline Transform Transform::operator-()const {
         Transform rslt;
         rslt.rotation_ = -rotation_;
-        rslt.position_ = -position_;
+        rslt.rot_dir_ = Angle::invertRotDir(rot_dir_);
+        rslt.position_ = -position_.rotate(rslt.rot_dir_);
         rslt.scale_.set(1.0f/scale_.getX(), 1.0f/scale_.getY());
-        rslt.sin_r_ = -sin_r_;
-        rslt.cos_r_ = cos_r_;
         return rslt;
     }
 
     inline Transform operator*(const Transform& t1, const Transform& t2) {
         Transform rslt;
 
-        f32 a1 = t1.cos_r_*t1.scale_.getX();
-        f32 b1 = t1.sin_r_*t1.scale_.getX();
-        f32 c1 = -t1.sin_r_*t1.scale_.getY();
-        f32 d1 = t1.cos_r_*t1.scale_.getY();
+        glm::mat2 m1 = t1.calcRSMat();
+        glm::mat2 m2 = t2.calcRSMat();
 
-        f32 a2 = t2.cos_r_*t2.scale_.getX();
-        f32 b2 = t2.sin_r_*t2.scale_.getX();
-        f32 c2 = -t2.sin_r_*t2.scale_.getY();
-        f32 d2 = t2.cos_r_*t2.scale_.getY();
-
-        rslt.position_.accX() = t2.position_.getX()*a1 + t2.position_.getY()*c1 + t1.position_.getX();
-        rslt.position_.accY() = t2.position_.getX()*b1 + t2.position_.getY()*d1 + t1.position_.getY();
+        glm::vec2& t2_pos = *(glm::vec2*)t2.position_.getDataPtr();
+        rslt.position_.accX() = glm::dot(t2_pos, m1[0]) + t1.position_.getX();
+        rslt.position_.accY() = glm::dot(t2_pos, m1[1]) + t1.position_.getY();
 
         rslt.rotation_ = t2.rotation_ + t1.rotation_;
         rslt.rotation_.normalize();
-        rslt.sin_r_ = t2.sin_r_*t1.cos_r_ + t2.cos_r_*t1.sin_r_;
-        rslt.cos_r_ = t2.cos_r_*t1.cos_r_ - t2.sin_r_*t1.sin_r_;
-
-        rslt.scale_ = Transform::extractScale_(a2*a1 + b2*c1,
-                                               a2*b1 + b2*d1,
-                                               c2*a1 + d2*c1,
-                                               d2*d1 + c2*b1,
-                                               rslt.sin_r_, rslt.cos_r_);
+        rslt.rot_dir_ = Angle::combineRotations(t1.rot_dir_, t2.rot_dir_);
+        rslt.scale_ = Transform::extractScale_(m2*m1, rslt.rot_dir_);
         return rslt;
     }
 
@@ -173,12 +170,11 @@ namespace grynca {
     }
 
     inline Transform operator-(const Transform& t1, const Transform& t2) {
-        return Transform(t1.position_ - t2.position_, t1.rotation_ - t2.rotation_, t1.scale_ - t2.scale_);
+        return operator*(-t2, t1);
     }
 
     inline bool operator==(const Transform& t1, const Transform& t2) {
-        return  t1.cos_r_ == t2.cos_r_
-                && t1.sin_r_ == t2.sin_r_
+        return  t1.rot_dir_ == t2.rot_dir_
                 && t1.position_ == t2.position_
                 && t1.scale_ == t2.scale_;
     }
@@ -192,22 +188,14 @@ namespace grynca {
         return os;
     }
 
-    inline Angle Transform::extractRotation_(f32 a, f32 b, f32& sin_out, f32& cos_out) {
+    inline Angle Transform::extractRotation_(f32 a, f32 b, Dir2& rot_dir_out) {
         Angle rslt(atan2f(b, a));
-        rslt.getSinCos(sin_out, cos_out);
+        rot_dir_out = rslt.getDir();
         return rslt;
     }
 
-    inline Vec2 Transform::extractScale_(f32 a, f32 b, f32 c, f32 d, f32 sin_r, f32 cos_r) {
-        Vec2 rslt;
-        if (fabs(sin_r) < maths::EPS) {
-            rslt.setX(a/cos_r);
-            rslt.setY(d/cos_r);
-        }
-        else {
-            rslt.setX(b/sin_r);
-            rslt.setY(c/sin_r);
-        }
-        return rslt;
+    inline Vec2 Transform::extractScale_(const glm::mat2& rs_mat, const Dir2& rot_dir) {
+        glm::mat2 scale_m = rs_mat*glm::mat2(rot_dir.getX(), rot_dir.getY(), -rot_dir.getY(), rot_dir.getX());
+        return Vec2(scale_m[0][0], scale_m[1][1]);
     }
 }
